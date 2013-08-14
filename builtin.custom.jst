@@ -1,0 +1,44 @@
+{
+    "es5:window": {
+        "guid": "es5:window",
+        "doc": "Browser root object",
+        "properties": {
+        }
+    },
+    "es5:JSON": {
+        "guid": "es5:JSON",
+        "doc": "JSON API",
+        "properties": {
+            "_parse": [{
+                "guid": "es5:JSON/parse",
+                "doc": "Parses a JSON string and turns it into a Javascript object",
+                "properties": { "_return": [] }
+            }],
+            "_stringify": [{
+                "guid": "es5:JSON/stringify",
+                "doc": "Serializes a Javascript object to a JSON-encoded string",
+                "properties": { "_return": ["es5:String"] }
+            }]
+        }
+    },
+    "es5:document": {
+        "guid": "es5:document",
+        "doc": "Window's document object",
+        "properties": {
+            "_createElement": [{
+                "guid": "es5:document/createElement",
+                "doc": "Parses a JSON string and turns it into a Javascript object",
+                "properties": { "_return": ["es5:Object"] }
+            }]
+        }
+    },
+    "rjs:require": {
+        "guid": "es5:require",
+        "doc": "Import a package",
+        "properties": {
+            "_arg0": ["rjs:package"],
+            "_return": []
+        },
+        "fargs": ["name"]
+    }
+}
