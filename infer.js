@@ -606,7 +606,7 @@ function analyze(doc, ast, filePath, basePath, callback) {
         Value.enterContext("local:");
         staticEval(scope, ast, filePath, basePath);
         callback();
-    });
+    }, true);
 }
 
 function tryGetRow(node) {
