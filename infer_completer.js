@@ -223,6 +223,24 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                     }))
                     return this;
             },
+            'ERROR()', 'PropertyInit(x,e)', 'ObjectInit(ps)', function(b, node) {
+                if (b.ps) {
+                    completer.proposeObjectProperty(node, identifier, completions);
+                }
+                else if (!b.x) {
+                    if (currentNode.parent.cons !== "PropertyInit")
+                        return; // Fallthrough
+                    currentNode = currentNode.parent;
+                    b.x = currentNode[0];
+                    b.e = currentNode[1];
+                }
+                // get parent parent like in ObjectInit([PropertyInit("b",ERROR())])
+                var objectInit = currentNode.parent.parent;
+                if (!objectInit.parent || !objectInit.parent.parent || !objectInit.parent.parent.cons === "Call")
+                    return node;
+                completer.proposeObjectProperty(objectInit, identifier, completions);
+                return node;
+            },
             'Call(_, _)', function(b) {
                 completer.proposeClosure(this, doc, pos, completions);
                 // Fallthrough to next rule
@@ -351,6 +369,32 @@ completer.proposeClosure = function(node, doc, pos, completions) {
                 docUrl      : v.fargs && v.fargs.docUrl,
                 icon        : "method",
                 priority    : PRIORITY_INFER_HIGH
+            };
+        });
+    });
+};
+
+/**
+ * Complete properties for an Object init in e.g.
+ * Call(PropAccess(Var("http"),"example"),[ObjectInit([PropertyInit("b",ERROR())])])
+ */    
+completer.proposeObjectProperty = function(objectInit, identifier, completions) {
+    var listIndex;
+    for (var i = 0; i < objectInit.parent.length; i++)
+        if (objectInit.parent[i] === objectInit) listIndex = i;
+    var call = objectInit.parent.parent;
+    infer.inferValues(call[0]).forEach(function(v) {
+        if (!v.fargs || !v.fargs[listIndex] || !v.fargs[listIndex].properties)
+            return;
+        v.fargs[listIndex].properties.forEach(function(property) {
+            completions["_$p$" + property.id] = {
+                id:          property.id,
+                name:        property.id,
+                replaceText: property.id,
+                doc:         property.doc,
+                docUrl:      property.docUrl,
+                icon:        "property",
+                priority:    PRIORITY_INFER
             };
         });
     });
