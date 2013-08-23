@@ -228,7 +228,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 // Fallthrough to next rule
             },
             'Var(_)', function(b) {
-                if (this.parent.parent && this.parent.parent.isMatch('Call(_, _)'))
+                if (this.parent.parent && this.parent.parent.isMatch('Call(_, _)') && "function".indexOf(identifier) === 0)
                     completer.proposeClosure(this.parent.parent, doc, pos, completions);
                 // Fallthrough to next rule
             },
