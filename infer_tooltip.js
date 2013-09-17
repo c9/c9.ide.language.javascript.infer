@@ -17,9 +17,9 @@ handler.handlesLanguage = function(language) {
 };
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
-    if(!currentNode)
+    if (!currentNode)
         return callback();
-    if(fullAst.parent === undefined) {
+    if (fullAst.parent === undefined) {
         traverse.addParentPointers(fullAst);
         fullAst.parent = null;
     }
@@ -42,10 +42,9 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
                 return this;
         }
     );
-    if (!callNode) {
-        callback();
-        return;
-    }
+    if (!callNode)
+        return callback();
+    
     argIndex = this.getArgIndex(callNode, doc, cursorPos);
     
     if (argIndex !== -1) {
@@ -119,7 +118,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                         result = i;
                         return this;
                     }
-                    else if (pos && cursorPos.row >= pos.sl && cursorPos.column >= pos.ec) {
+                    else if (pos && pos.sl <= cursorPos.row && pos.sc <= cursorPos.column) {
                         result = i === b.args.length - 1 ? i : i + 1;
                     }
                 });
