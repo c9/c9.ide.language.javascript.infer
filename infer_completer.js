@@ -424,7 +424,7 @@ completer.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, cal
         'Call(e, args)', function(b) {
             callNode = this;
             argPos = { row: b.args.getPos().sl, column: b.args.getPos().sc }; 
-            if (argPos.row === 9999999999)
+            if (argPos.row >= 9999999999)
                 argPos = cursorPos;
         },
         function() {
