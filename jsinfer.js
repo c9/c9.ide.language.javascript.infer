@@ -16,6 +16,7 @@ define(function(require, exports, module) {
         
         language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_completer');
         language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_jumptodef');
+        language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_tooltip');
         var foo = { a: function() { return { b: 2 } } };
         register(null, {});
     }
