@@ -924,21 +924,21 @@ var Editor =function(renderer, session) {
         return this.renderer.getScrollBottomRow() - this.renderer.getScrollTopRow() + 1;
     };
 
-    this.$getTabDownRow = function() {
+    this.$getPageDownRow = function() {
         return this.renderer.getScrollBottomRow();
     };
 
-    this.$getTabUpRow = function() {
+    this.$getPageUpRow = function() {
         var firstRow = this.renderer.getScrollTopRow();
         var lastRow = this.renderer.getScrollBottomRow();
 
         return firstRow - (lastRow - firstRow);
     };
 
-    this.selectTabDown = function() {
-        var row = this.$getTabDownRow() + Math.floor(this.$getVisibleRowCount() / 2);
+    this.selectPageDown = function() {
+        var row = this.$getPageDownRow() + Math.floor(this.$getVisibleRowCount() / 2);
 
-        this.scrollTabDown();
+        this.scrollPageDown();
 
         var selection = this.getSelection();
         var leadScreenPos = this.session.documentToScreenPosition(selection.getSelectionLead());
@@ -946,11 +946,11 @@ var Editor =function(renderer, session) {
         selection.selectTo(dest.row, dest.column);
     };
 
-    this.selectTabUp = function() {
+    this.selectPageUp = function() {
         var visibleRows = this.renderer.getScrollTopRow() - this.renderer.getScrollBottomRow();
-        var row = this.$getTabUpRow() + Math.round(visibleRows / 2);
+        var row = this.$getPageUpRow() + Math.round(visibleRows / 2);
 
-        this.scrollTabUp();
+        this.scrollPageUp();
 
         var selection = this.getSelection();
         var leadScreenPos = this.session.documentToScreenPosition(selection.getSelectionLead());
@@ -958,28 +958,28 @@ var Editor =function(renderer, session) {
         selection.selectTo(dest.row, dest.column);
     };
 
-    this.gotoTabDown = function() {
-        var row = this.$getTabDownRow();
+    this.gotoPageDown = function() {
+        var row = this.$getPageDownRow();
         var column = this.getCursorPositionScreen().column;
 
         this.scrollToRow(row);
         this.getSelection().moveCursorToScreen(row, column);
     };
 
-    this.gotoTabUp = function() {
-        var row = this.$getTabUpRow();
+    this.gotoPageUp = function() {
+        var row = this.$getPageUpRow();
         var column = this.getCursorPositionScreen().column;
 
        this.scrollToRow(row);
        this.getSelection().moveCursorToScreen(row, column);
     };
 
-    this.scrollTabDown = function() {
-        this.scrollToRow(this.$getTabDownRow());
+    this.scrollPageDown = function() {
+        this.scrollToRow(this.$getPageDownRow());
     };
 
-    this.scrollTabUp = function() {
-        this.renderer.scrollToRow(this.$getTabUpRow());
+    this.scrollPageUp = function() {
+        this.renderer.scrollToRow(this.$getPageUpRow());
     };
 
     this.scrollToRow = function(row) {

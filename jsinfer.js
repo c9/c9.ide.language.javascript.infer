@@ -6,7 +6,7 @@
  */
 define(function(require, exports, module) {
     main.consumes = [
-        "Plugin", "language", "language.complete"
+        "plugin", "language", "language.complete"
     ];
     main.provides = [];
     return main;
