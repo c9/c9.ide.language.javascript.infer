@@ -87,7 +87,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     if (!currentNode)
         return callback();
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.getIdentifierRegex());
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
     var basePath = path.getBasePath(completer.path, completer.workspaceDir);
     var filePath = path.canonicalizePath(completer.path, basePath);
     if (fullAst.parent === undefined) {
