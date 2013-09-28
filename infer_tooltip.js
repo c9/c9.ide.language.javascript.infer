@@ -104,7 +104,11 @@ handler.getArgIndex = function(node, doc, cursorPos) {
             else if (b.args.length === 0 && line.substr(cursorPos.column - 1, 2) === "()") {
                 result = 0;
             }
-            else if (!tree.inRange(b.args.getPos(), cursorTreePos, true)) {
+            else if (!tree.inRange(this.getPos(), cursorTreePos, true)) {
+                return this;
+            }
+            else if (line.substr(0, cursorPos.column + 1).match(/,\s*\)$/)) {
+                result = b.args.length;
                 return this;
             }
             for (var i = 0; i < b.args.length; i++) {
