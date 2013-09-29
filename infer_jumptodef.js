@@ -10,6 +10,7 @@ var baseLanguageHandler = require('plugins/c9.ide.language/base_handler');
 var handler = module.exports = Object.create(baseLanguageHandler);
 var infer = require("./infer");
 var path = require("./path");
+var astUpdater = require("./ast_updater");
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -23,7 +24,7 @@ handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
     var basePath = path.getBasePath(handler.path, handler.workspaceDir);
     var filePath = path.canonicalizePath(handler.path, basePath);
     
-    infer.analyze(doc, fullAst, filePath, basePath, function() {
+    astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, pos, function(fullAst, currentNode) {
         currentNode.rewrite(
             'PropAccess(o, p)', function(b, node) {
                 var values = infer.inferValues(b.o);

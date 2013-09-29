@@ -9,6 +9,7 @@ var tree = require("treehugger/tree");
 var traverse = require("treehugger/traverse");
 var FunctionValue = require('./values').FunctionValue;
 var ValueCollection = require('./values').ValueCollection;
+var astUpdater = require("./ast_updater");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
     
@@ -50,7 +51,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     if (argIndex !== -1) {
         var basePath = path.getBasePath(handler.path, handler.workspaceDir);
         var filePath = path.canonicalizePath(handler.path, basePath);
-        infer.analyze(doc, fullAst, filePath, basePath, function() {
+        astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             var fnVals = infer.inferValues(callNode[0]);
             var argNames = [];
             var opt = false;

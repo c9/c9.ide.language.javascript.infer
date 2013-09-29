@@ -18,6 +18,7 @@ var completeUtil = require("plugins/c9.ide.language.generic/complete_util");
 var traverse = require("treehugger/traverse");
 var tree = require("treehugger/tree");
 var tooltip = require("./infer_tooltip");
+var astUpdater = require("./ast_updater");
 
 // Completion priority levels
 // Should be used sparingly, since they disrupt the sorting order
@@ -94,7 +95,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         traverse.addParentPointers(fullAst);
         fullAst.parent = null;
     }
-    infer.analyze(doc, fullAst, filePath, basePath, function() {
+    astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, pos, function(fullAst, currentNode) {
         var completions = {};
         var duplicates = {};
         currentNode.rewrite(
