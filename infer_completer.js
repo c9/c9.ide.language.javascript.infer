@@ -47,7 +47,7 @@ function valueToMatch(container, v, name, isPackage) {
         name = name.replace(/\.js$/, "");
     if ((v instanceof FunctionValue || v.properties._return) && !isPackage) {
         var showArgs = tooltip.extractArgumentNames(v, true);
-        var insertArgs = showArgs.opt ? tooltip.extractArgumentNames(v, false) : showArgs;
+        var insertArgs = "opt" in showArgs ? tooltip.extractArgumentNames(v, false) : showArgs;
         return {
             id           : name,
             guid         : v.guid + "[0" + name + "]",

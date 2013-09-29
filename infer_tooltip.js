@@ -54,27 +54,28 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             var fnVals = infer.inferValues(callNode[0]);
             var argNames = [];
-            var opt = false;
-            fnVals.forEach(function(fnVal) {
+            var opt = Number.MAX_VALUE;
+            fnVals.forEach(function(fnVal, i) {
                 var argNameObj = extractArgumentNames(fnVal, true);
                 if (argNameObj.inferredNames || argNameObj.argNames.length <= argIndex)
                     return;
                 argNames.push(argNameObj.argNames);
-                opt = opt || argNameObj.opt;
+                if ("opt" in argNameObj && opt < argNames.length - 1)
+                    opt = Math.min(opt, i);
             });
             
             var hintHtml = '';
             for (var i = 0; i < argNames.length; i++) {
                 var curArgNames = argNames[i];
                 for (var j = 0; j < curArgNames.length; j++) {
-                    if(j === argIndex && !opt && argNames.length === 1)
+                    if (j === argIndex && j < opt && argNames.length === 1)
                         hintHtml += "<b>" + curArgNames[j] + "</b>";
                     else
                         hintHtml += curArgNames[j];
-                    if(j < curArgNames.length - 1)
+                    if (j < curArgNames.length - 1)
                         hintHtml += ", ";
                 }
-                if(i < argNames.length - 1)
+                if (i < argNames.length - 1)
                     hintHtml += "<br />";
             }
             callback({ hint: hintHtml, displayPos: argPos });
@@ -138,7 +139,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
     var args = [];
     var argsCode = [];
     var inferredArguments = false;
-    var opt = false;
+    var opt;
     var fargs = v instanceof FunctionValue ? v.getFargs() : [];
     var argColl = extractArgumentValues(v, fargs, 0);
     for (var idx = 0; !argColl.isEmpty(); idx++) {
@@ -147,7 +148,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
             argName =  fargs[idx].id || fargs[idx];
             if (showOptionals && fargs[idx].opt) {
                 argName = "[" + argName + "]";
-                opt = true;
+                opt = opt || idx;
             }
         }
         else {
