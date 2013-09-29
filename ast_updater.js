@@ -27,8 +27,10 @@ define(function(require, exports, module) {
         var docValue = doc.getValue();
         var updatedAST = tryUpdateAST(doc, docValue, ast);
         if (updatedAST) {
-            lastDocValue = docValue;
-            lastAST = ast;
+            if (ast.getAnnotation("scope")) {
+                lastDocValue = docValue;
+                lastAST = ast;
+            }
             console.log("[ast_updater] reused AST"); // DEBUG
             return callback(updatedAST, findNode(updatedAST, pos));
         }
@@ -42,12 +44,15 @@ define(function(require, exports, module) {
     };
    
     function tryUpdateAST(doc, docValue, ast) {
+        if (lastAST && (!lastAST.annos || !lastAST.annos.scope)) {
+            console.error("Warning: Source does not appear to be analyzed yet; restarting analysis");
+            return false;
+        }
         if (lastDocValue === docValue)
             return lastAST;
         if (!isUpdateableAST(doc, docValue, ast))
             return null;
         
-        assert(lastAST.annos.scope, "Source is empty");
         if (!copyAnnosTop(lastAST, ast))
             return null;
         assert(ast.annos.scope, "Target is empty");
