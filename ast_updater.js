@@ -4,8 +4,13 @@ define(function(require, exports, module) {
     var assert = require("plugins/c9.util/assert");
     var tree = require("treehugger/tree");
     
-    var REGEX_SAFE_CHANGE = /^[\(\)\s\.\/\*+;A-Za-z-0-9_$]*$/;
-    var REGEX_IDENTIFIER_PART = /[A-Za-z-0-9_$]*$/;
+    /**
+     * A regex determining if it is likely
+     * possible to update the old AST, if it's diff matches this.
+     * Note that a more expensive, AST-based check is performed
+     * after this.
+     */
+    var REGEX_SAFE_CHANGE = /^[\(\)\s\.\/\*+;,A-Za-z-0-9_$]*$/;
     
     var lastAST;
     var lastDocValue;
@@ -43,10 +48,10 @@ define(function(require, exports, module) {
             return null;
         
         assert(lastAST.annos.scope, "Source is empty");
-        if (copyAnnosTop(lastAST, ast)) {
-            assert(ast.annos.scope, "Target is empty");
-            return ast;
-        }
+        if (!copyAnnosTop(lastAST, ast))
+            return null;
+        assert(ast.annos.scope, "Target is empty");
+        return ast;
     }
     
     /**
@@ -59,7 +64,7 @@ define(function(require, exports, module) {
         if (!lastDocValue)
             return false;
 
-        var diff = getDiff(lastDocValue, docValue);
+        var diff = getDiff(lastDocValue, docValue) || getDiff(docValue, lastDocValue);
         
         return diff && diff.text.match(REGEX_SAFE_CHANGE);
     }
@@ -83,7 +88,12 @@ define(function(require, exports, module) {
                     copyAnnos(oldAST[i], newAST[j][0]);
                     continue;
                 }
-                // Call()
+                // PropAccess(Var(x), y) became Var(x)
+                if (newAST[j].cons === "Var" && oldAST[i].isMatch("PropAccess(Var(_),_)")) {
+                    copyAnnos(oldAST[i][0], newAST[j]);
+                    continue;
+                }
+                // PropAccess became Call(PropAccess, _)
                 if (oldAST[i].isMatch("PropAccess(Var(_),_)") && newAST[j].isMatch("Call(PropAccess(Var(_),_),_)")) {
                     copyAnnos(oldAST[i][0], newAST[j][0][0]);
                     var oldTemplate = new tree.ListNode([oldAST[i][0]]);
@@ -91,12 +101,22 @@ define(function(require, exports, module) {
                     copyAnnosTop(oldTemplate, newAST[j][1])
                     continue;
                 }
-                // Var(x) was just inserted
+                // Call(PropAccess, _) became PropAccess
+                if (newAST[j].isMatch("PropAccess(Var(_),_)") && oldAST[i].isMatch("Call(PropAccess(Var(_),_),_)")) {
+                    copyAnnos(oldAST[i][0][0], newAST[j][0]);
+                    continue;
+                }
+                // Var(x) was (possibly) inserted
                 if (newAST[j].cons === "Var" && newAST[j+1] && newAST[j+1].cons === oldAST[i].cons) {
                     copyAnnos(findScopeNode(oldAST), newAST[j]);
                     if (!newAST[j].annos)
                         return false;
                     i--;
+                    continue;
+                }
+                // Var(x) was (possibly) removed
+                if (oldAST[i].cons === "Var" && oldAST[i+1] && oldAST[i+1].cons === newAST[i].cons) {
+                    j--;
                     continue;
                 }
                 return false;
@@ -123,9 +143,9 @@ define(function(require, exports, module) {
     function findScopeNode(ast) {
         if (!ast)
             return null;
-        if (ast.annos.scope)
+        if (ast.annos && ast.annos.scope)
             return ast;
-        return findScopeAnnos(ast.parent);
+        return findScopeNode(ast.parent);
     }
     
     function getDiff(oldDoc, newDoc) {

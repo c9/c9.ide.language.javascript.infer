@@ -442,7 +442,7 @@ function inferValues(e) {
                 throw new Error("[infer] Cannot find scope; analysis "
                     + (root.getAnnotation("scope") ? "incomplete" : "may not have been performed yet"));
             }
-            var v = scope.get(b.nm.value);
+            var v = scope.get(b.nm.value) || scope.declare(b.nm.value);
             if (v.kind === KIND_DEFAULT)
                 values.extend(v.values);
             return this;
