@@ -24,27 +24,15 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         traverse.addParentPointers(fullAst);
         fullAst.parent = null;
     }
-    var steps = 0;
     var argIndex = -1;
     
-    var callNode;
-    var argPos;
-    currentNode.traverseUp(
-        'Call(e, args)', function(b) {
-            callNode = this;
-            argPos = { row: b.args.getPos().sl, column: b.args.getPos().sc }; 
-            if (argPos.row >= 9999999999)
-                argPos = cursorPos;
-        },
-        function() {
-            steps++;
-            var pos = this.getPos();
-            if (pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
-                return this;
-        }
-    );
+    var callNode = getCallNode(currentNode, cursorPos);
     if (!callNode)
         return callback();
+        
+    var argPos = { row: callNode[1].getPos().sl, column: callNode[1].getPos().sc }; 
+    if (argPos.row >= 9999999999)
+        argPos = cursorPos;
     
     argIndex = this.getArgIndex(callNode, doc, cursorPos);
     
@@ -52,6 +40,7 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
         var basePath = path.getBasePath(handler.path, handler.workspaceDir);
         var filePath = path.canonicalizePath(handler.path, basePath);
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
+            callNode = getCallNode(currentNode, cursorPos); // get analyzed callNode
             var fnVals = infer.inferValues(callNode[0]);
             var argNames = [];
             var opt = Number.MAX_VALUE;
@@ -84,6 +73,22 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     else
         callback();
 };
+
+function getCallNode(currentNode, cursorPos) {
+    var result;
+    currentNode.traverseUp(
+        'Call(e, args)', function(b, node) {
+            result = node;
+            return node;
+        },
+        function(node) {
+            var pos = node.getPos();
+            if (pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
+                return node;
+        }
+    );
+    return result;
+}
 
 /**
  * Gets the index of the selected function argument, or returns -1 if N/A.

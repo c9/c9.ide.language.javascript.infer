@@ -29,7 +29,7 @@ define(function(require, exports, module) {
         if (updatedAST) {
             if (ast.getAnnotation("scope")) {
                 lastDocValue = docValue;
-                lastAST = ast;
+                lastAST = updatedAST;
             }
             console.log("[ast_updater] reused AST"); // DEBUG
             return callback(updatedAST, findNode(updatedAST, pos));
