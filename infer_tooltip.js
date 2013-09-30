@@ -130,7 +130,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                         return this;
                     }
                     else if (pos && pos.sl <= cursorPos.row && pos.sc <= cursorPos.column) {
-                        result = i === b.args.length - 1 ? i : i + 1;
+                        result = i;
                     }
                 });
             }
