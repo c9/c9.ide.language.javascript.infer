@@ -17,7 +17,7 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
+handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
     if (fullAst.parent === undefined) {
