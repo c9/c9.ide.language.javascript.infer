@@ -76,6 +76,9 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
                 if(i < argNames.length - 1)
                     hintHtml += "<br />";
             }
+            hintHtml = 'writeFile(<span class="language_activeparam">file</span>, param1, [param2])<br /> \
+                        <span class="language_paramhelp"><span class="language_activeparam">file</span> This is like the file</span>' // HACK
+            
             callback({ hint: hintHtml, displayPos: argPos });
         });
     }
