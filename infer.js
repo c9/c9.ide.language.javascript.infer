@@ -436,7 +436,13 @@ function inferValues(e) {
             return this;
         },
         "Var(nm)", function(b) {
-            var v = this.getAnnotation("scope").get(b.nm.value);
+            var scope = this.getAnnotation("scope");
+            if (!scope) {
+                for (var root = this; root.parent; ) root = root.parent;
+                throw new Error("[infer] Cannot find scope; analysis "
+                    + (root.getAnnotation("scope") ? "incomplete" : "may not have been performed yet"));
+            }
+            var v = scope.get(b.nm.value) || scope.declare(b.nm.value);
             if (v.kind === KIND_DEFAULT)
                 values.extend(v.values);
             return this;

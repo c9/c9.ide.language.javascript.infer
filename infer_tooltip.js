@@ -9,6 +9,7 @@ var tree = require("treehugger/tree");
 var traverse = require("treehugger/traverse");
 var FunctionValue = require('./values').FunctionValue;
 var ValueCollection = require('./values').ValueCollection;
+var astUpdater = require("./ast_updater");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
     
@@ -16,64 +17,54 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
+handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
     if (fullAst.parent === undefined) {
         traverse.addParentPointers(fullAst);
         fullAst.parent = null;
     }
-    var steps = 0;
     var argIndex = -1;
     
-    var callNode;
-    var argPos;
-    currentNode.traverseUp(
-        'Call(e, args)', function(b) {
-            callNode = this;
-            argPos = { row: b.args.getPos().sl, column: b.args.getPos().sc }; 
-            if (argPos.row >= 9999999999)
-                argPos = cursorPos;
-        },
-        function() {
-            steps++;
-            var pos = this.getPos();
-            if (pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
-                return this;
-        }
-    );
+    var callNode = getCallNode(currentNode, cursorPos);
     if (!callNode)
         return callback();
+        
+    var argPos = { row: callNode[1].getPos().sl, column: callNode[1].getPos().sc }; 
+    if (argPos.row >= 9999999999)
+        argPos = cursorPos;
     
     argIndex = this.getArgIndex(callNode, doc, cursorPos);
     
     if (argIndex !== -1) {
         var basePath = path.getBasePath(handler.path, handler.workspaceDir);
         var filePath = path.canonicalizePath(handler.path, basePath);
-        infer.analyze(doc, fullAst, filePath, basePath, function() {
+        astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
+            callNode = getCallNode(currentNode, cursorPos); // get analyzed callNode
             var fnVals = infer.inferValues(callNode[0]);
             var argNames = [];
-            var opt = false;
-            fnVals.forEach(function(fnVal) {
+            var opt = Number.MAX_VALUE;
+            fnVals.forEach(function(fnVal, i) {
                 var argNameObj = extractArgumentNames(fnVal, true);
                 if (argNameObj.inferredNames || argNameObj.argNames.length <= argIndex)
                     return;
                 argNames.push(argNameObj.argNames);
-                opt = opt || argNameObj.opt;
+                if ("opt" in argNameObj && opt < argNames.length - 1)
+                    opt = Math.min(opt, i);
             });
             
             var hintHtml = '';
             for (var i = 0; i < argNames.length; i++) {
                 var curArgNames = argNames[i];
                 for (var j = 0; j < curArgNames.length; j++) {
-                    if(j === argIndex && !opt && argNames.length === 1)
+                    if (j === argIndex && j < opt && argNames.length === 1)
                         hintHtml += "<b>" + curArgNames[j] + "</b>";
                     else
                         hintHtml += curArgNames[j];
-                    if(j < curArgNames.length - 1)
+                    if (j < curArgNames.length - 1)
                         hintHtml += ", ";
                 }
-                if(i < argNames.length - 1)
+                if (i < argNames.length - 1)
                     hintHtml += "<br />";
             }
             hintHtml = 'writeFile(<span class="language_activeparam">file</span>, param1, [param2])<br /> \
@@ -85,6 +76,22 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callb
     else
         callback();
 };
+
+function getCallNode(currentNode, cursorPos) {
+    var result;
+    currentNode.traverseUp(
+        'Call(e, args)', function(b, node) {
+            result = node;
+            return node;
+        },
+        function(node) {
+            var pos = node.getPos();
+            if (pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
+                return node;
+        }
+    );
+    return result;
+}
 
 /**
  * Gets the index of the selected function argument, or returns -1 if N/A.
@@ -104,10 +111,14 @@ handler.getArgIndex = function(node, doc, cursorPos) {
             if (b.args.length === 0 && this.getPos().ec - 1 === cursorPos.column) {
                 result = 0;
             }
-            else if (b.args.length === 0 && line.substr(cursorPos.column - 1, 2) === "()") {
+            else if (b.args.length === 0 && line.substr(cursorPos.column -1).match(/\(\s*\)/)) {
                 result = 0;
             }
-            else if (!tree.inRange(b.args.getPos(), cursorTreePos, true)) {
+            else if (!tree.inRange(this.getPos(), cursorTreePos, true)) {
+                return this;
+            }
+            else if (line.substr(0, cursorPos.column + 1).match(/,\s*\)$/)) {
+                result = b.args.length;
                 return this;
             }
             for (var i = 0; i < b.args.length; i++) {
@@ -122,7 +133,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                         return this;
                     }
                     else if (pos && pos.sl <= cursorPos.row && pos.sc <= cursorPos.column) {
-                        result = i === b.args.length - 1 ? i : i + 1;
+                        result = i;
                     }
                 });
             }
@@ -136,7 +147,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
     var args = [];
     var argsCode = [];
     var inferredArguments = false;
-    var opt = false;
+    var opt;
     var fargs = v instanceof FunctionValue ? v.getFargs() : [];
     var argColl = extractArgumentValues(v, fargs, 0);
     for (var idx = 0; !argColl.isEmpty(); idx++) {
@@ -145,7 +156,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
             argName =  fargs[idx].id || fargs[idx];
             if (showOptionals && fargs[idx].opt) {
                 argName = "[" + argName + "]";
-                opt = true;
+                opt = opt || idx;
             }
         }
         else {

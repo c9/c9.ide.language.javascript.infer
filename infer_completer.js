@@ -14,10 +14,11 @@ var EXPAND_REQUIRE_LIMIT = 5;
 var REQUIRE_PROPOSALS_MAX = 80;
 var REQUIRE_ID_REGEX = /(?!["'])./;
 var FunctionValue = require('./values').FunctionValue;
-var completeUtil = require("plugins/c9.ide.language.generic/complete_util");
+var completeUtil = require("plugins/c9.ide.language/complete_util");
 var traverse = require("treehugger/traverse");
 var tree = require("treehugger/tree");
 var tooltip = require("./infer_tooltip");
+var astUpdater = require("./ast_updater");
 
 // Completion priority levels
 // Should be used sparingly, since they disrupt the sorting order
@@ -46,7 +47,7 @@ function valueToMatch(container, v, name, isPackage) {
         name = name.replace(/\.js$/, "");
     if ((v instanceof FunctionValue || v.properties._return) && !isPackage) {
         var showArgs = tooltip.extractArgumentNames(v, true);
-        var insertArgs = showArgs.opt ? tooltip.extractArgumentNames(v, false) : showArgs;
+        var insertArgs = "opt" in showArgs ? tooltip.extractArgumentNames(v, false) : showArgs;
         return {
             id           : name,
             guid         : v.guid + "[0" + name + "]",
@@ -94,7 +95,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
         traverse.addParentPointers(fullAst);
         fullAst.parent = null;
     }
-    infer.analyze(doc, fullAst, filePath, basePath, function() {
+    astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, pos, function(fullAst, currentNode) {
         var completions = {};
         var duplicates = {};
         currentNode.rewrite(
