@@ -61,7 +61,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 if ("opt" in argNameObj && opt < argNames.length - 1)
                     opt = Math.min(opt, i);
                 argDoc = argDoc || fnVal.fargs && fnVal.fargs[argIndex].doc;
-                argName = argName || fnVal.fargs[argIndex].id || fnVals.fargs[argIndex];
+                argName = argName || fnVal.fargs && fnVal.fargs[argIndex].id || fnVal.fargs[argIndex];
             });
             
             var hintHtml = fnName + "(";
