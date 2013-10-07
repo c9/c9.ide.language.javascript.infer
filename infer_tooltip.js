@@ -42,23 +42,34 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             callNode = getCallNode(currentNode, cursorPos); // get analyzed callNode
             var fnVals = infer.inferValues(callNode[0]);
+            var fnName = callNode[0].cons === "Var" ? callNode[0][0].value : "function";
             var argNames = [];
+            var argName;
+            var argDoc;
             var opt = Number.MAX_VALUE;
             fnVals.forEach(function(fnVal, i) {
                 var argNameObj = extractArgumentNames(fnVal, true);
                 if (argNameObj.inferredNames || argNameObj.argNames.length <= argIndex)
                     return;
-                argNames.push(argNameObj.argNames);
+                fnName = fnVal.guid.match(/([^:\/\[]+)(\[[^\]]*\])?$/)[1];
+                argNames.push(argNameObj.argNames.map(function(name, i) {
+                    var type;
+                    return fnVal.fargs && fnVal.fargs[i].type && (type = guidToShortString(fnVal.fargs[i].type))
+                        ? name + ":" + type
+                        : name;
+                }));
                 if ("opt" in argNameObj && opt < argNames.length - 1)
                     opt = Math.min(opt, i);
+                argDoc = argDoc || fnVal.fargs && fnVal.fargs[argIndex].doc;
+                argName = argName || fnVal.fargs[argIndex].id || fnVals.fargs[argIndex];
             });
             
-            var hintHtml = '';
+            var hintHtml = fnName + "(";
             for (var i = 0; i < argNames.length; i++) {
                 var curArgNames = argNames[i];
                 for (var j = 0; j < curArgNames.length; j++) {
                     if (j === argIndex && j < opt && argNames.length === 1)
-                        hintHtml += "<b>" + curArgNames[j] + "</b>";
+                        hintHtml += '<span class="language_activeparam">' + curArgNames[j] + "</span>";
                     else
                         hintHtml += curArgNames[j];
                     if (j < curArgNames.length - 1)
@@ -67,8 +78,15 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 if (i < argNames.length - 1)
                     hintHtml += "<br />";
             }
-            hintHtml = 'writeFile(<span class="language_activeparam">file</span>, param1, [param2])<br /> \
-                        <span class="language_paramhelp"><span class="language_activeparam">file</span> This is like the file</span>' // HACK
+            hintHtml += ")";
+            if (argDoc)
+                hintHtml +=
+                    '<div class="language_paramhelp">'
+                    + '<span class="language_activeparamindent">' + fnName + '(</span>'
+                    + '<span class="language_activeparam">' + argName + '</span>'
+                    + '<span class="language_activeparamhelp">' + argDoc + '</span></div>'
+            
+            // TODO: support returning a json object instead?
             
             callback({ hint: hintHtml, displayPos: argPos });
         });
@@ -76,6 +94,16 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     else
         callback();
 };
+
+// TODO: merge with completedp.guidToShortString()
+var guidToShortString = function(guid) {
+    if (Array.isArray(guid))
+        guid = guid[0];
+    if (!guid)
+        return;
+    var result = guid.replace(/^[^:]+:(([^\/]+)\/)*?([^\/]*?)(\[\d+[^\]]*\])?(\/prototype)?$|.*/, "$3");
+    return result && result !== "Object" ? result : "";
+}
 
 function getCallNode(currentNode, cursorPos) {
     var result;
@@ -111,7 +139,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
             if (b.args.length === 0 && this.getPos().ec - 1 === cursorPos.column) {
                 result = 0;
             }
-            else if (b.args.length === 0 && line.substr(cursorPos.column -1).match(/\(\s*\)/)) {
+            else if (b.args.length === 0 && line.substr(cursorPos.column).match(/^\s*\)/)) {
                 result = 0;
             }
             else if (!tree.inRange(this.getPos(), cursorTreePos, true)) {
