@@ -44,6 +44,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             var fnVals = infer.inferValues(callNode[0]);
             var fnName = callNode[0].cons === "Var" ? callNode[0][0].value : "function";
             var argNames = [];
+            var fnTypes = [];
             var argName;
             var argDoc;
             var opt = Number.MAX_VALUE;
@@ -60,9 +61,13 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 }));
                 if ("opt" in argNameObj && opt < argNames.length - 1)
                     opt = Math.min(opt, i);
+                fnTypes.push(fnVal.properties && fnVal.properties._return && fnVal.properties._return[0]);
                 argDoc = argDoc || fnVal.fargs && fnVal.fargs[argIndex].doc;
                 argName = argName || fnVal.fargs && fnVal.fargs[argIndex].id || fnVal.fargs[argIndex];
             });
+            
+            if (fnName === "function" && !argNames.length)
+                return;
             
             var hintHtml = fnName + "(";
             for (var i = 0; i < argNames.length; i++) {
@@ -75,6 +80,8 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                     if (j < curArgNames.length - 1)
                         hintHtml += ", ";
                 }
+                if (fnTypes[i])
+                    hintHtml += " : " + fnTypes[i];
                 if (i < argNames.length - 1)
                     hintHtml += "<br />";
             }
@@ -82,8 +89,8 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             if (argDoc)
                 hintHtml +=
                     '<div class="language_paramhelp">'
-                    + '<span class="language_activeparamindent">' + fnName + '(</span>'
-                    + '<span class="language_activeparam">' + argName + '</span>'
+                    // + '<span class="language_activeparamindent">' + fnName + '(</span>'
+                    + '<span class="language_activeparam">' + argName + '</span>:'
                     + '<span class="language_activeparamhelp">' + argDoc + '</span></div>'
             
             // TODO: support returning a json object instead?
