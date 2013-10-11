@@ -66,7 +66,8 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 argName = argName || fnVal.fargs && fnVal.fargs[argIndex].id || fnVal.fargs[argIndex];
             });
             
-            if (fnName === "function" && !argNames.length)
+            // Quit if we have no useful info
+            if (fnName === "function" || (!fnTypes.length && !argDoc) && !argNames.length)
                 return;
             
             var hintHtml = fnName + "(";
