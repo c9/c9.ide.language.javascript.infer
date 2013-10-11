@@ -79,7 +79,7 @@ define(function(require, exports, module) {
             
         for (var i = 0, j = 0; j < newAST.length; i++, j++) {
             if (!oldAST[i]) {
-                if  (newAST[j].cons !== "Var")
+                if (newAST[j].cons !== "Var")
                     return false;
                 // Var(x) was just inserted
                 copyAnnos(findScopeNode(oldAST), newAST[j]);
@@ -103,7 +103,7 @@ define(function(require, exports, module) {
                     copyAnnos(oldAST[i][0], newAST[j][0][0]);
                     var oldTemplate = new tree.ListNode([oldAST[i][0]]);
                     oldTemplate.parent = oldAST;
-                    copyAnnosTop(oldTemplate, newAST[j][1])
+                    copyAnnosTop(oldTemplate, newAST[j][1]);
                     continue;
                 }
                 // Call(PropAccess, _) became PropAccess
@@ -126,7 +126,7 @@ define(function(require, exports, module) {
                 }
                 return false;
             }
-            if (newAST[i].length)
+            if (newAST[j].length)
                 if (!copyAnnosTop(oldAST[i], newAST[j]))
                     return false;
             
