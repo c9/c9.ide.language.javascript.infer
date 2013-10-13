@@ -42,7 +42,11 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             callNode = getCallNode(currentNode, cursorPos); // get analyzed callNode
             var fnVals = infer.inferValues(callNode[0]);
-            var fnName = callNode[0].cons === "Var" ? callNode[0][0].value : "function";
+            var fnName = callNode[0].rewrite(
+                "Var(x)", function(b) { return b.x.value; },
+                "PropAccess(e, x)", function(b) { return b.x.value; },
+                function() { return "function"; }
+            );
             var argNames = [];
             var fnTypes = [];
             var argName;
@@ -52,13 +56,16 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 var argNameObj = extractArgumentNames(fnVal, true);
                 if (argNameObj.inferredNames || argNameObj.argNames.length <= argIndex)
                     return;
-                fnName = fnVal.guid.match(/([^:\/\[]+)(\[[^\]]*\])?$/)[1];
-                argNames.push(argNameObj.argNames.map(function(name, i) {
+                fnName = fnName || fnVal.guid.match(/([^:\/\[]+)(\[[^\]]*\])?$/)[1];
+                var myArgs = argNameObj.argNames.map(function(name, i) {
                     var type;
                     return fnVal.fargs && fnVal.fargs[i].type && (type = guidToShortString(fnVal.fargs[i].type))
                         ? name + ":" + type
                         : name;
-                }));
+                });
+                if (containsArray(argNames, myArgs))
+                    return;
+                argNames.push(myArgs);
                 if ("opt" in argNameObj && opt < argNames.length - 1)
                     opt = Math.min(opt, i);
                 fnTypes.push(fnVal.properties && fnVal.properties._return && fnVal.properties._return[0]);
@@ -70,11 +77,12 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             if (fnName === "function" || (!fnTypes.length && !argDoc) && !argNames.length)
                 return;
             
-            var hintHtml = fnName + "(";
+            var hintHtml = "";
             for (var i = 0; i < argNames.length; i++) {
+                hintHtml += fnName + "(";
                 var curArgNames = argNames[i];
                 for (var j = 0; j < curArgNames.length; j++) {
-                    if (j === argIndex && j < opt && argNames.length === 1)
+                    if ((j === argIndex && j < opt))
                         hintHtml += '<span class="language_activeparam">' + curArgNames[j] + "</span>";
                     else
                         hintHtml += curArgNames[j];
@@ -83,10 +91,10 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 }
                 if (fnTypes[i])
                     hintHtml += " : " + fnTypes[i];
+                hintHtml += ")";
                 if (i < argNames.length - 1)
                     hintHtml += "<br />";
             }
-            hintHtml += ")";
             if (argDoc)
                 hintHtml +=
                     '<div class="language_paramhelp">'
@@ -102,6 +110,21 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     else
         callback();
 };
+
+function containsArray(arrayArrays, array) {
+    for (var i = 0; i < arrayArrays.length; i++) {
+        if (arraysEqual(arrayArrays[i], array))
+            return true;
+    }
+    return false;
+}
+
+function arraysEqual(a, b) {
+  for (var i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
 
 // TODO: merge with completedp.guidToShortString()
 var guidToShortString = function(guid) {
