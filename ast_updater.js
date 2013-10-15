@@ -31,7 +31,7 @@ define(function(require, exports, module) {
                 lastDocValue = docValue;
                 lastAST = updatedAST;
             }
-            console.log("[ast_updater] reused AST"); // DEBUG
+            // console.log("[ast_updater] reused AST"); // DEBUG
             return callback(updatedAST, findNode(updatedAST, pos));
         }
         
