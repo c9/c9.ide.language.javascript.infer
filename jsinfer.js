@@ -14,10 +14,11 @@ define(function(require, exports, module) {
     function main(options, imports, register) {
         var language = imports.language;
         
-        language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_completer');
         language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_jumptodef');
         language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_tooltip');
-        var foo = { a: function() { return { b: 2 } } };
+        language.registerLanguageHandler('plugins/c9.ide.language.javascript.infer/infer_completer', function() {
+            console.log("c9.ide.language started");
+        });
         register(null, {});
     }
 
