@@ -41,7 +41,7 @@ completer.getCompletionRegex = function() {
     return (/[\.]/);
 };
 
-function valueToMatch(container, v, name, isPackage) {
+function valueToMatch(container, v, name, isPackage, isContextual) {
     // Node.js and the default behavior of require.js is not adding the .js extension
     if (isPackage)
         name = name.replace(/\.js$/, "");
@@ -59,20 +59,22 @@ function valueToMatch(container, v, name, isPackage) {
             doc          : v.doc,
             docUrl       : v.docUrl,
             isFunction   : true,
-            type         : v.properties._return && getGuid(v.properties._return.values[0])
+            type         : v.properties._return && getGuid(v.properties._return.values[0]),
+            isContextual : isContextual
         };
     }
     else {
         return {
-            id          : name,
-            guid        : container ? container.guid + "/" + name : v.guid + "[0" + name + "]",
-            name        : name,
-            replaceText : name,
-            doc         : v.doc,
-            docUrl      : v.docUrl,
-            icon        : "property",
-            priority    : name === "__proto__" ? PRIORITY_INFER_LOW : PRIORITY_INFER,
-            type        : !isPackage && getGuid(v.properties.___proto__ ? v.properties.___proto__.values[0] : v.guid)
+            id           : name,
+            guid         : container ? container.guid + "/" + name : v.guid + "[0" + name + "]",
+            name         : name,
+            replaceText  : name,
+            doc          : v.doc,
+            docUrl       : v.docUrl,
+            icon         : "property",
+            priority     : name === "__proto__" ? PRIORITY_INFER_LOW : PRIORITY_INFER,
+            type         : !isPackage && getGuid(v.properties.___proto__ ? v.properties.___proto__.values[0] : v.guid),
+            isContextual : isContextual
         };
     }
 }
@@ -113,7 +115,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 for (var i = 0; i < matches.length; i++) {
                     values.forEach(function(v) {
                         v.get(matches[i]).forEach(function(propVal) {
-                            var match = valueToMatch(v, propVal, matches[i]);
+                            var match = valueToMatch(v, propVal, matches[i], false, true);
                             // Only override completion if argument names were _not_ inferred, or if no better match is known
                             var duplicate = duplicates["_"+match.id];
                             if (duplicate && duplicate.inferredNames)
