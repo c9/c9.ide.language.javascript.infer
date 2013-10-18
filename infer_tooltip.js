@@ -196,6 +196,8 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                         return this;
                     }
                     else if (pos && pos.sl <= cursorPos.row && pos.sc <= cursorPos.column) {
+                        if (pos.sl === cursorPos.row && pos.ec === cursorPos.column - 1 && line[pos.ec] === ")")
+                            return;
                         result = i;
                     }
                 });
