@@ -215,7 +215,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
     var opt;
     var fargs = v instanceof FunctionValue ? v.getFargs() : [];
     var argColl = extractArgumentValues(v, fargs, 0);
-    for (var idx = 0; !argColl.isEmpty(); idx++) {
+    for (var idx = 0; fargs.length ? idx < fargs.length : !argColl.isEmpty; idx++) {
         var argName;
         if (fargs[idx]) {
             argName =  fargs[idx].id || fargs[idx];
