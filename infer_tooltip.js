@@ -58,7 +58,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             var opt = Number.MAX_VALUE;
             fnVals.forEach(function(fnVal, i) {
                 var argNameObj = extractArgumentNames(fnVal, true);
-                if (argNameObj.inferredNames || argNameObj.argNames.length <= argIndex)
+                if (argNameObj.inferredNames)
                     return;
                 fnName = fnName || fnVal.guid.match(/([^:\/\[]+)(\[[^\]]*\])?$/)[1];
                 var myArgs = argNameObj.argNames.map(function(name, i) {
@@ -73,8 +73,8 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 if ("opt" in argNameObj && opt < argNames.length - 1)
                     opt = Math.min(opt, i);
                 fnTypes.push(fnVal.properties && fnVal.properties._return && fnVal.properties._return[0]);
-                argDoc = argDoc || fnVal.fargs && fnVal.fargs[argIndex].doc;
-                argName = argName || fnVal.fargs && fnVal.fargs[argIndex].id || fnVal.fargs[argIndex];
+                argDoc = argDoc || fnVal.fargs && fnVal.fargs[argIndex] && fnVal.fargs[argIndex].doc;
+                argName = argName || fnVal.fargs && fnVal.fargs[argIndex] && (fnVal.fargs[argIndex].id || fnVal.fargs[argIndex]);
             });
             
             // Quit if we have no useful info
