@@ -36,6 +36,7 @@ define(function(require, exports, module) {
         }
         
         // Re-analyze instead
+        console.log("[ast_updater] reanalyzed"); // DEBUG
         return infer.analyze(doc, ast, filePath, basePath, function() {
             lastDocValue = docValue;
             lastAST = ast;
@@ -48,13 +49,18 @@ define(function(require, exports, module) {
             console.error("Warning: Source does not appear to be analyzed yet; restarting analysis");
             return false;
         }
-        if (lastDocValue === docValue)
+        if (lastDocValue === docValue) {
+            // Note: if this message appears when it shouldn't, something is
+            // wrong with the mirror (mirror.js)
+            console.log("[ast_updater] Doc appears unchanged; reusing analysis")
             return lastAST;
+        }
         if (!isUpdateableAST(doc, docValue, ast))
             return null;
         
-        if (!copyAnnosTop(lastAST, ast))
+        if (!copyAnnosTop(lastAST, ast, true))
             return null;
+        copyAnnosTop(lastAst, ast);
         assert(ast.annos.scope, "Target is empty");
         return ast;
     }
@@ -74,15 +80,15 @@ define(function(require, exports, module) {
         return diff && diff.text.match(REGEX_SAFE_CHANGE);
     }
     
-    function copyAnnosTop(oldAST, newAST) {
-        copyAnnos(oldAST, newAST);
+    function copyAnnosTop(oldAST, newAST, dryRun) {
+        copyAnnos(oldAST, newAST, dryRun);
             
         for (var i = 0, j = 0; j < newAST.length; i++, j++) {
             if (!oldAST[i]) {
                 if (newAST[j].cons !== "Var")
                     return false;
                 // Var(x) was just inserted
-                copyAnnos(findScopeNode(oldAST), newAST[j]);
+                copyAnnos(findScopeNode(oldAST), newAST[j], dryRun);
                 if (!newAST[j].annos)
                     return false;
                 continue;
@@ -90,30 +96,30 @@ define(function(require, exports, module) {
             if (oldAST[i].cons !== newAST[j].cons) {
                 // Var(x) became PropAccess(Var(x), y)
                 if (oldAST[i].cons === "Var" && newAST[j].isMatch("PropAccess(Var(_),_)")) {
-                    copyAnnos(oldAST[i], newAST[j][0]);
+                    copyAnnos(oldAST[i], newAST[j][0], dryRun);
                     continue;
                 }
                 // PropAccess(Var(x), y) became Var(x)
                 if (newAST[j].cons === "Var" && oldAST[i].isMatch("PropAccess(Var(_),_)")) {
-                    copyAnnos(oldAST[i][0], newAST[j]);
+                    copyAnnos(oldAST[i][0], newAST[j], dryRun);
                     continue;
                 }
                 // PropAccess became Call(PropAccess, _)
                 if (oldAST[i].isMatch("PropAccess(Var(_),_)") && newAST[j].isMatch("Call(PropAccess(Var(_),_),_)")) {
-                    copyAnnos(oldAST[i][0], newAST[j][0][0]);
+                    copyAnnos(oldAST[i][0], newAST[j][0][0], dryRun);
                     var oldTemplate = new tree.ListNode([oldAST[i][0]]);
                     oldTemplate.parent = oldAST;
-                    copyAnnosTop(oldTemplate, newAST[j][1]);
+                    copyAnnosTop(oldTemplate, newAST[j][1], dryRun);
                     continue;
                 }
                 // Call(PropAccess, _) became PropAccess
                 if (newAST[j].isMatch("PropAccess(Var(_),_)") && oldAST[i].isMatch("Call(PropAccess(Var(_),_),_)")) {
-                    copyAnnos(oldAST[i][0][0], newAST[j][0]);
+                    copyAnnos(oldAST[i][0][0], newAST[j][0], dryRun);
                     continue;
                 }
                 // Var(x) was (possibly) inserted
                 if (newAST[j].cons === "Var" && newAST[j+1] && newAST[j+1].cons === oldAST[i].cons) {
-                    copyAnnos(findScopeNode(oldAST), newAST[j]);
+                    copyAnnos(findScopeNode(oldAST), newAST[j], dryRun);
                     if (!newAST[j].annos)
                         return false;
                     i--;
@@ -127,15 +133,15 @@ define(function(require, exports, module) {
                 return false;
             }
             if (newAST[j].length)
-                if (!copyAnnosTop(oldAST[i], newAST[j]))
+                if (!copyAnnosTop(oldAST[i], newAST[j]), dryRun)
                     return false;
             
         }
         return true;
     }
     
-    function copyAnnos(oldNode, newNode) {
-        if (!oldNode.annos)
+    function copyAnnos(oldNode, newNode, dryRun) {
+        if (dryRun || !oldNode.annos)
             return;
         if (!newNode.annos)
             newNode.annos = {};
