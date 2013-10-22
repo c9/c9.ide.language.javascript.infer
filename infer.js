@@ -290,7 +290,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             if (!variable) {
                 // Not defined yet!? Declare it now
                 variable = scope.declare(b.name.value);
-                scope.hint(b.name.value, new FunctionValue(b.name.value), MAYBE_PROPER);
+                scope.hint(b.name.value, new FunctionValue(b.name.value, null, true), MAYBE_PROPER);
             } 
             else {
                 var foundFunction = false;
@@ -299,7 +299,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
                         foundFunction = true;
                 });
                 if (!foundFunction)
-                    scope.hint(b.name.value, new FunctionValue(b.name.value), MAYBE_PROPER);
+                    scope.hint(b.name.value, new FunctionValue(b.name.value, null, true), MAYBE_PROPER);
             }
             staticEval(scope, b.args);
             // Now tell the function value about the argument types that were passed
@@ -338,7 +338,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             if (fnValues.isEmpty()) {
                 var vs = inferValues(b.e);
                 vs.forEach(function(v) {
-                    v.hint(b.prop.value, new FunctionValue(b.prop.value), MAYBE_PROPER);
+                    v.hint(b.prop.value, new FunctionValue(b.prop.value, null, true), MAYBE_PROPER);
                 });
                 fnValues = inferValues(this[0]);
             }

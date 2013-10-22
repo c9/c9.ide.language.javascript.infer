@@ -44,7 +44,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         var basePath = path.getBasePath(handler.path, handler.workspaceDir);
         var filePath = path.canonicalizePath(handler.path, basePath);
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
-            callNode = getCallNode(currentNode, cursorPos); // get analyzed callNode
+            callNode = getCallNode(currentNode, cursorPos); // get analyzed ast's callNode
             var fnVals = infer.inferValues(callNode[0]);
             var fnName = callNode[0].rewrite(
                 "Var(x)", function(b) { return b.x.value; },
@@ -126,6 +126,8 @@ function containsArray(arrayArrays, array) {
 }
 
 function arraysEqual(a, b) {
+  if (a.length !== b.length)
+      return false;
   for (var i = 0; i < a.length; i++) {
       if (a[i] !== b[i]) return false;
   }
@@ -213,7 +215,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
 var extractArgumentNames = handler.extractArgumentNames = function(v, showOptionals) {
     var args = [];
     var argsCode = [];
-    var inferredArguments = false;
+    var inferredArguments = v.callOnly;
     var opt;
     var fargs = v instanceof FunctionValue ? v.getFargs() : [];
     var argColl = extractArgumentValues(v, fargs, 0);

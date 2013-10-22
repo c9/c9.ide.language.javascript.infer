@@ -207,9 +207,10 @@ ValueCollection.prototype.isEmpty = function() {
     return this.values.length === 0 && this.prototypeValues.length === 0;
 };
 
-function FunctionValue(name, node) {
+function FunctionValue(name, node, callOnly) {
     this.init(name, node);
     this.node = node;
+    this.callOnly = callOnly;
     if (name || node) {
         this.hintMultiple('__proto__', lookupValue("es5:Function").get('prototype'));
     }
