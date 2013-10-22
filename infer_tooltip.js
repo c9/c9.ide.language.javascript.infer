@@ -152,8 +152,9 @@ function getCallNode(currentNode, cursorPos) {
             return node;
         },
         function(node) {
+            // Show tooltip only on first line if call spans multiple lines
             var pos = node.getPos();
-            if (pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
+            if (pos && pos.sl !== cursorPos.row)
                 return node;
         }
     );
