@@ -77,10 +77,11 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                 argName = argName || fnVal.fargs && fnVal.fargs[argIndex] && (fnVal.fargs[argIndex].id || fnVal.fargs[argIndex]);
             });
             
+            var noTypeInfo = !fnTypes.length || fnTypes.length === 1 && !fnTypes[0];
+            var noArgInfo = !argNames.length || (argNames.length === 1 && !argNames[0].length);
+            
             // Quit if we have no useful info
-            if (fnName === "function"
-              || (!fnTypes.length && !argDoc) &&
-                  (!argNames.length || (argNames.length === 1 && !argNames[0].length)))
+            if (fnName === "function" || noTypeInfo && !argDoc && noArgInfo)
                 return;
             
             var hintHtml = "";
