@@ -64,6 +64,9 @@ function valueToMatch(container, v, name, isPackage, isContextual) {
         };
     }
     else {
+        var isHighConfidence = 
+            !(container && container.properties && container.properties["_" + name])
+            || container.properties["_" + name].confidence > 10;
         return {
             id           : name,
             guid         : container ? container.guid + "/" + name : v.guid + "[0" + name + "]",
@@ -74,7 +77,7 @@ function valueToMatch(container, v, name, isPackage, isContextual) {
             icon         : "property",
             priority     : name === "__proto__" ? PRIORITY_INFER_LOW : PRIORITY_INFER,
             type         : !isPackage && getGuid(v.properties.___proto__ ? v.properties.___proto__.values[0] : v.guid),
-            isContextual : isContextual
+            isContextual : isHighConfidence
         };
     }
 }
