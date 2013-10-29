@@ -2,9 +2,10 @@ require("amd-loader");
 require("../../../test/setup_paths");
 
 var parser = require("treehugger/js/parse");
+var traverse = require("treehugger/traverse");
 var scopeAnalyzer = require('plugins/c9.ide.language.javascript/scope_analyzer');
 var infer = require('../infer');
-var Value = require('./values').Value;
+var Value = require('../values').Value;
 var externalize = require('../externalize').externalize;
 var assert = require("assert");
 var fs = require('fs');
@@ -68,12 +69,13 @@ function extractTypeAnnotations(code) {
 }
 
 exports.buildTest = function(filename, exportSymbol) {
-    var code = fs.readFileSync(__dirname + "/" + filename, 'ascii');
-    var builtins1 = fs.readFileSync(__dirname + "/../builtin.jst", 'ascii');
-    var builtins2 = fs.readFileSync(__dirname + "/../builtin.custom.jst", 'ascii');
-    var builtins3 = fs.readFileSync(__dirname + "/../builtin.nodejs.jst", 'ascii');
+    var code = fs.readFileSync(__dirname + "/" + filename, 'utf-8');
+    var builtins1 = fs.readFileSync(__dirname + "/../builtin.jst", 'utf-8');
+    var builtins2 = fs.readFileSync(__dirname + "/../builtin.custom.jst", 'utf-8');
+    var builtins3 = fs.readFileSync(__dirname + "/../builtin.nodejs.jst", 'utf-8');
     var builtins = [JSON.parse(builtins1), JSON.parse(builtins2), JSON.parse(builtins3)];
     var node = parser.parse(code);
+    traverse.addParentPointers(node);
     scopeAnalyzer.analyze(code, node, function() { /* Risky, but we know this is sync in this context */ });
     Value.enterContext('es5:unnamed');
     var typeAnnotations = extractTypeAnnotations(code);
