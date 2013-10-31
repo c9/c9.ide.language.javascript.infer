@@ -36,8 +36,8 @@ define(function(require, exports, module) {
         }
         
         // Re-analyze instead
-        console.log("[ast_updater] reanalyzed"); // DEBUG
         return infer.analyze(doc, ast, filePath, basePath, function() {
+            console.log("[ast_updater] reanalyzed"); // DEBUG
             lastDocValue = docValue;
             lastAST = ast;
             callback(ast, findNode(ast, pos));
@@ -60,7 +60,7 @@ define(function(require, exports, module) {
         
         if (!copyAnnosTop(lastAST, ast, true))
             return null;
-        copyAnnosTop(lastAst, ast);
+        copyAnnosTop(lastAST, ast);
         assert(ast.annos.scope, "Target is empty");
         return ast;
     }
@@ -133,7 +133,7 @@ define(function(require, exports, module) {
                 return false;
             }
             if (newAST[j].length)
-                if (!copyAnnosTop(oldAST[i], newAST[j]), dryRun)
+                if (!copyAnnosTop(oldAST[i], newAST[j], dryRun))
                     return false;
             
         }
