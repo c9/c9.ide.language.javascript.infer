@@ -37,7 +37,7 @@ define(function(require, exports, module) {
         
         // Re-analyze instead
         return infer.analyze(doc, ast, filePath, basePath, function() {
-            console.log("[ast_updater] reanalyzed"); // DEBUG
+            console.log("[ast_updater] Reanalyzed"); // DEBUG
             lastDocValue = docValue;
             lastAST = ast;
             callback(ast, findNode(ast, pos));
