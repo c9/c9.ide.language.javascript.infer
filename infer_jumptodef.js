@@ -60,7 +60,7 @@ var jumpToRequire = function(node, results) {
         if (v.path)
             results.push({ path: v.path, row: v.row });
     });
-}
+};
 
 var jumpToProperty = module.exports.jumpToProperty = function(value, property, results) {
     var prop = value.properties && value.properties["_" + property];
