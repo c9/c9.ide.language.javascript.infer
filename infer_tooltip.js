@@ -111,7 +111,16 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             
             // TODO: support returning a json object instead?
             
-            callback({ hint: hintHtml, displayPos: argPos });
+            callback({
+                hint: hintHtml,
+                pos: {
+                    sl: callNode[1].getPos().sl,
+                    sc: callNode[1].getPos().sc,
+                    el: callNode.getPos().el,
+                    ec: callNode.getPos().ec,
+                },
+                displayPos: argPos
+            });
         });
     }
     else
