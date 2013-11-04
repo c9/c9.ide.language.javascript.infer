@@ -1,5 +1,5 @@
 /**
- * Inference-based JavaScript jump to definition.
+ * Inference-based JavaScript jump to dejufinition.
  *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -17,7 +17,7 @@ handler.handlesLanguage = function(language) {
 };
 
 handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
-    if (!fullAst)
+    if (!fullAst || !currentNode)
         return callback();
     
     var results = [];
@@ -58,7 +58,11 @@ var jumpToRequire = function(node, results) {
     var values = infer.inferValues(node);
     values.forEach(function(v) {
         if (v.path)
-            results.push({ path: v.path, row: v.row });
+            results.push({
+                path: v.path,
+                row: v.row,
+                icon: "package"
+            });
     });
 };
 
@@ -68,7 +72,12 @@ var jumpToProperty = module.exports.jumpToProperty = function(value, property, r
         prop = prop[0];
     if (!prop || (!value.path && !prop.path && !prop.row))
         return;
-    results.push({ row: prop.row, column: prop.column, path: prop.path || value.path });
+    results.push({
+        row: prop.row,
+        column: prop.column,
+        path: prop.path || value.path,
+        icon: "property"
+    });
 };
 
 var jumpToVar = function(node, results) {
@@ -76,7 +85,11 @@ var jumpToVar = function(node, results) {
     values.forEach(function(v) {
         if (!v.path && !v.row)
             return;
-        results.push({ row: v.row, path: v.path });
+        results.push({
+            row: v.row,
+            path: v.path,
+            icon: "property"
+        });
     });
 };
 
