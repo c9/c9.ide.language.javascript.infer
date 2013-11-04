@@ -117,7 +117,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                     sl: callNode[1].getPos().sl,
                     sc: callNode[1].getPos().sc,
                     el: callNode.getPos().el,
-                    ec: callNode.getPos().ec,
+                    ec: callNode.getPos().ec - 1,
                 },
                 displayPos: argPos
             });
@@ -200,7 +200,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                 return this;
             }
             for (var i = 0; i < b.args.length; i++) {
-                if(b.args[i].cons === "ERROR" && result === -1) {
+                if (b.args[i].cons === "ERROR" && result === -1) {
                     result = i;
                     break;
                 }
@@ -212,7 +212,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
                     }
                     else if (pos && pos.sl <= cursorPos.row && pos.sc <= cursorPos.column) {
                         if (pos.sl === cursorPos.row && pos.ec === cursorPos.column - 1 && line[pos.ec] === ")")
-                            return;
+                            return result = -1;
                         result = i;
                     }
                 });
