@@ -1,3 +1,6 @@
+
+"use server";
+
 var testFw = require('./framework');
 
 module.exports = testFw.buildTest('node-api.js');
