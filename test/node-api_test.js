@@ -1,5 +1,5 @@
 
-"use server";
+"use client";
 
 var testFw = require('./framework');
 
