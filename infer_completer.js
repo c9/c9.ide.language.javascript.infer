@@ -169,7 +169,8 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 return node;
             },
             'Call(_, _)', function(b) {
-                completer.proposeClosure(this, doc, pos, completions);
+                if ("function".indexOf(identifier) === 0)
+                    completer.proposeClosure(this, doc, pos, completions);
                 // Fallthrough to next rule
             },
             'Var(_)', function(b) {
