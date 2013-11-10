@@ -43,7 +43,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         argIndex = this.getArgIndex(callNode, doc, cursorPos);
     }
     else if (currentNode.isMatch('Var(_)')) {
-        displayPos = currentNode.getPos();
+        displayPos = { row: currentNode.getPos().row, column: cursorPos.getPos().column };
         argIndex = -1;
     }
     else {
@@ -56,7 +56,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             callNode = getCallNode(currentNode, cursorPos); // get analyzed ast's callNode
             var targetNode = callNode ? callNode[0] : currentNode;
-            var rangeNode = callNode ? callNode[1] : currentNode;
+            var rangeNode = callNode && callNode[1].getPos().sc < 99999 ? callNode[1] : currentNode;
             var fnVals = infer.inferValues(targetNode);
             var fnName = targetNode.rewrite(
                 "Var(x)", function(b) { return b.x.value; },
@@ -129,12 +129,9 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                     sl: rangeNode.getPos().sl,
                     sc: rangeNode.getPos().sc,
                     el: rangeNode.getPos().el,
-                    ec: rangeNode.getPos().ec - 1,
+                    ec: rangeNode.getPos().ec,
                 },
-                displayPos: {
-                    row: displayPos.sl,
-                    column: displayPos.sc
-                }
+                displayPos: displayPos
             });
         });
     }
