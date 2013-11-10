@@ -43,7 +43,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         argIndex = this.getArgIndex(callNode, doc, cursorPos);
     }
     else if (currentNode.isMatch('Var(_)')) {
-        displayPos = { row: currentNode.getPos().row, column: cursorPos.getPos().column };
+        displayPos = { row: currentNode.getPos().sl, column: currentNode.getPos().sc };
         argIndex = -1;
     }
     else {
