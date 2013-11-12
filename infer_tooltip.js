@@ -45,6 +45,9 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     else if (currentNode.isMatch('Var(_)')) {
         displayPos = { row: currentNode.getPos().sl, column: currentNode.getPos().sc };
         argIndex = -1;
+        // Don't display tooltip at end of identifier (may just have been typed in)
+        if (cursorPos.column === currentNode.getPos().ec)
+            return callback();
     }
     else {
       return callback();
