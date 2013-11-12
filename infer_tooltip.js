@@ -56,7 +56,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
             callNode = getCallNode(currentNode, cursorPos); // get analyzed ast's callNode
             var targetNode = callNode ? callNode[0] : currentNode;
-            var rangeNode = callNode && callNode[1].getPos().sc < 99999 ? callNode[1] : currentNode;
+            var rangeNode = callNode && callNode.getPos().sc < 99999 ? callNode : currentNode;
             var fnVals = infer.inferValues(targetNode);
             var fnName = targetNode.rewrite(
                 "Var(x)", function(b) { return b.x.value; },
@@ -207,7 +207,7 @@ handler.getArgIndex = function(node, doc, cursorPos) {
             else if (!tree.inRange(this.getPos(), cursorTreePos, true)) {
                 return this;
             }
-            else if (line.substr(0, cursorPos.column + 1).match(/,\s*\)$/)) {
+            else if (cursorPos.row === this.getPos().sl && line.substr(0, cursorPos.column + 1).match(/,\s*\)$/)) {
                 result = b.args.length;
                 return this;
             }
