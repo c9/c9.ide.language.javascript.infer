@@ -50,7 +50,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             return callback();
     }
     else {
-      return callback();
+        return callback();
     }
     
     if (argIndex !== -1 || !callNode) {
@@ -97,7 +97,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
             
             // Quit if we have no useful info
             if (fnName === "function" || noTypeInfo && !argDoc && noArgInfo)
-                return;
+                return callback();
             
             var hintHtml = "";
             for (var i = 0; i < argNames.length; i++) {
