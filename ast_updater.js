@@ -31,13 +31,14 @@ define(function(require, exports, module) {
                 lastDocValue = docValue;
                 lastAST = updatedAST;
             }
-            // console.log("[ast_updater] reused AST"); // DEBUG
+            console.log("[ast_updater] reused AST"); // DEBUG
             return callback(updatedAST, findNode(updatedAST, pos));
         }
         
         // Re-analyze instead
+        var start = new Date().getTime();
         return infer.analyze(doc, ast, filePath, basePath, function() {
-            console.log("[ast_updater] Reanalyzed"); // DEBUG
+            console.log("[ast_updater] Reanalyzed in " + (new Date().getTime() - start) + "ms"); // DEBUG
             lastDocValue = docValue;
             lastAST = ast;
             callback(ast, findNode(ast, pos));
@@ -52,7 +53,7 @@ define(function(require, exports, module) {
         if (lastDocValue === docValue) {
             // Note: if this message appears when it shouldn't, something is
             // wrong with the mirror (mirror.js)
-            console.log("[ast_updater] Doc appears unchanged; reusing analysis")
+            console.log("[ast_updater] Doc appears unchanged; reusing analysis");
             return lastAST;
         }
         if (!isUpdateableAST(doc, docValue, ast))
