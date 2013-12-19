@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
 
     var infer = require("./infer");
-    var assert = require("plugins/c9.util/assert");
+    var assert = require("c9/assert");
     var tree = require("treehugger/tree");
     
     /**
