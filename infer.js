@@ -359,7 +359,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
         },
         "Return(e)", function(b) {
             staticEval(scope, b.e);
-            scope.fn.hintMultiple('return', inferValues(b.e), PROPER);
+            scope.fn && scope.fn.hintMultiple('return', inferValues(b.e), PROPER);
             return this;
         },
         "Var(name)", function(b) {
