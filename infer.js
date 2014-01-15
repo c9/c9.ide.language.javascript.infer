@@ -24,12 +24,13 @@ var NOT_PROPER      = scopeAnalyzer.NOT_PROPER;
 var KIND_PACKAGE    = scopeAnalyzer.KIND_PACKAGE;
 var KIND_DEFAULT    = scopeAnalyzer.KIND_DEFAULT;
 var path            = require("./path");
+var completeUtil    = require("plugins/c9.ide.language/complete_util");
 require('treehugger/traverse');
 
 var registeredSummaries = typeof window !== "undefined" && {
-    $builtin1$: JSON.parse(fetchText("plugins/c9.ide.language.javascript.infer/builtin.jst")),
-    $builtin2$: JSON.parse(fetchText("plugins/c9.ide.language.javascript.infer/builtin.custom.jst")),
-    $builtin3$: JSON.parse(fetchText("plugins/c9.ide.language.javascript.infer/builtin.nodejs.jst"))
+    $builtin1$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.jst")),
+    $builtin2$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.custom.jst")),
+    $builtin3$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.nodejs.jst"))
 };
 
 var filePath;
@@ -43,16 +44,6 @@ function registerSummary(guid, summary) {
     }
     
     registeredSummaries[guid] = summary;
-}
-
-function fetchText(path) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', "/static/" + path, false);
-    xhr.send();
-    if (xhr.status === 200)
-        return xhr.responseText;
-    else
-        return false;
 }
 
 Variable.prototype.addValue = function(value) {
@@ -621,7 +612,6 @@ function tryGetRow(node) {
 }
 
 exports.registerSummary = registerSummary;
-exports.fetchText = fetchText;
 exports.staticEval = staticEval;
 exports.inferValues = inferValues;
 exports.Scope = Scope;
