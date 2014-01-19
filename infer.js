@@ -430,8 +430,9 @@ function inferValues(e) {
             var scope = this.getAnnotation("scope");
             if (!scope) {
                 for (var root = this; root.parent; ) root = root.parent;
-                throw new Error("[infer] Cannot find scope; analysis "
+                console.error("[infer] Cannot find scope of " + b.nm + "; analysis "
                     + (root.getAnnotation("scope") ? "incomplete" : "may not have been performed yet"));
+                return;
             }
             var v = scope.get(b.nm.value) || scope.declare(b.nm.value);
             if (v.kind === KIND_DEFAULT)
