@@ -160,7 +160,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             evalFunction(scope, this);
             return this; // Stop traversal
         },
-        "VarDeclInit(name, e)", "ConstDeclInit(name, e)", function(b, node) {
+        "VarDeclInit(name, e)", "ConstDeclInit(name, e)", "LetDeclInit(name, e)", function(b, node) {
             staticEval(scope, b.e);
             scope.hintMultiple(b.name.value, inferValues(b.e), PROPER, filePath, tryGetRow(node));
             return this; // Stop traversal
