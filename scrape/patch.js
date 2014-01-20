@@ -24,7 +24,7 @@ var patchNodemanual = module.exports.patchNodemanual = function(defs) {
             "id": "port",
             opt: true,
             "type": [ "es5:Number/prototype" ],
-            doc : "The port to listen to. Use <tt>process.env.IP</tt> when hosted by Cloud9."
+            doc : "The port to listen to. Use <tt>process.env.PORT</tt> when hosted by Cloud9."
         },
         {
             "id": "address",
