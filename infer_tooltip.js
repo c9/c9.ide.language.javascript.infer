@@ -32,7 +32,6 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     
     var callNode = getCallNode(currentNode, cursorPos);
     var displayPos;
-    var argIndex;
     
     if (callNode) {
         var argPos = { row: callNode[1].getPos().sl, column: callNode[1].getPos().sc }; 
