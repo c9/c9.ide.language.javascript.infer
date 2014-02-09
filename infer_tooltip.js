@@ -24,10 +24,6 @@ handler.handlesEditor = function() {
 handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
-    if (fullAst.parent === undefined) {
-        traverse.addParentPointers(fullAst);
-        fullAst.parent = null;
-    }
     var argIndex = -1;
     
     var callNode = getCallNode(currentNode, cursorPos);
@@ -121,7 +117,7 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
                     '<div class="language_paramhelp">'
                     // + '<span class="language_activeparamindent">' + fnName + '(</span>'
                     + '<span class="language_activeparam">' + argName + '</span>:'
-                    + '<span class="language_activeparamhelp">' + argDoc + '</span></div>'
+                    + '<span class="language_activeparamhelp">' + argDoc + '</span></div>';
             
             // TODO: support returning a json object instead?
             
@@ -139,6 +135,10 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     }
     else
         callback();
+};
+
+handler.onCursorMove = function(doc, fullAst, cursorPos, currentNode, callback) {
+    callback();
 };
 
 function containsArray(arrayArrays, array) {
@@ -166,7 +166,7 @@ var guidToShortString = function(guid) {
         return;
     var result = guid.replace(/^[^:]+:(([^\/]+)\/)*?([^\/]*?)(\[\d+[^\]]*\])?(\/prototype)?$|.*/, "$3");
     return result && result !== "Object" ? result : "";
-}
+};
 
 function getCallNode(currentNode, cursorPos) {
     var result;

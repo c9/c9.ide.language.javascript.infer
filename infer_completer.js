@@ -38,7 +38,7 @@ completer.getIdentifierRegex = function() {
 };
 
 completer.getCompletionRegex = function() {
-    return (/[\.]/);
+    return (/^[\.]$/);
 };
 
 function valueToMatch(container, v, name, isPackage, isContextual) {
