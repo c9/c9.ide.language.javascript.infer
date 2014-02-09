@@ -21,6 +21,10 @@ handler.handlesEditor = function() {
     return this.HANDLES_ANY;
 };
 
+handler.getTooltipRegex = function() {
+    return (/\(/);
+};
+
 handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
         return callback();
