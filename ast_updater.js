@@ -126,19 +126,30 @@ define(function(require, exports, module) {
                     i--;
                     continue;
                 }
+                // Var(x) was (possibly) added
+                if (oldAST[i].cons === "None" && newAST[j].cons === "Var") {
+                    copyAnnos(findScopeNode(oldAST), newAST[j], dryRun);
+                    if (!newAST[j].annos)
+                        return false;
+                    i--;
+                    continue;
+                }
                 // Var(x) was (possibly) removed
                 if (oldAST[i].cons === "Var" && oldAST[i+1] && oldAST[i+1].cons === newAST[i].cons) {
                     j--;
                     continue;
                 }
                 // [stm1, stm2] became [If(Stm1), stm2] or [If(stm2)]
-                if (newAST[j].cons === "If" && newAST[j][1].isMatch("Block([])")) {
+                if (["If", "Return", "Throw"].indexOf(newAST[j].cons) > -1 && (!newAST[j][1] || newAST[j][1].isMatch("Block([])"))) {
                     var cond = newAST[j][0].toString();
                     if (cond === oldAST[i].toString()) {
                         copyAnnos(oldAST[i], newAST[j][0], dryRun);
                         continue;
                     }
-                    else if (oldAST[i+1] && cond === oldAST[i+1].toString()) {
+                    else if (!oldAST[i+1]) {
+                        continue;
+                    }
+                    else if (cond === oldAST[i+1].toString()) {
                         i++;
                         copyAnnos(oldAST[i], newAST[j][0], dryRun);
                         continue;
@@ -151,6 +162,8 @@ define(function(require, exports, module) {
                     var newBody = newAST[1];
                     if (oldCond.toString() === newBody.toString()) {
                         copyAnnos(findScopeNode(oldAST), newCond, dryRun);
+                        if (!newCond.annos)
+                            return false;
                         copyAnnos(oldCond, newBody, dryRun);
                         continue;
                     }
