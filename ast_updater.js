@@ -131,6 +131,30 @@ define(function(require, exports, module) {
                     j--;
                     continue;
                 }
+                // [stm1, stm2] became [If(Stm1), stm2] or [If(stm2)]
+                if (newAST[j].cons === "If" && newAST[j][1].isMatch("Block([])")) {
+                    var cond = newAST[j][0].toString();
+                    if (cond === oldAST[i].toString()) {
+                        copyAnnos(oldAST[i], newAST[j][0], dryRun);
+                        continue;
+                    }
+                    else if (oldAST[i+1] && cond === oldAST[i+1].toString()) {
+                        i++;
+                        copyAnnos(oldAST[i], newAST[j][0], dryRun);
+                        continue;
+                    }
+                }
+                // "if () s" became "if (c) s"
+                if (oldAST.cons === "If" && newAST.cons === "If" && newAST[0].cons === "Var" && oldAST[1].isMatch("Block([])")) {
+                    var oldCond = oldAST[0];
+                    var newCond = newAST[0]
+                    var newBody = newAST[1];
+                    if (oldCond.toString() === newBody.toString()) {
+                        copyAnnos(findScopeNode(oldAST), newCond, dryRun);
+                        copyAnnos(oldCond, newBody, dryRun);
+                        continue;
+                    }
+                }
                 return false;
             }
             if (newAST[j].length)
