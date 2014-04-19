@@ -82,7 +82,7 @@ define(function(require, exports, module) {
     }
     
     function copyAnnosTop(oldAST, newAST, dryRun) {
-        copyAnnos(oldAST, newAST, dryRun);
+        if (!dryRun) copyAnnos(oldAST, newAST);
             
         for (var i = 0, j = 0; j < newAST.length; i++, j++) {
             if (!oldAST[i]) {
@@ -158,7 +158,7 @@ define(function(require, exports, module) {
                 // "if () s" became "if (c) s"
                 if (oldAST.cons === "If" && newAST.cons === "If" && newAST[0].cons === "Var" && oldAST[1].isMatch("Block([])")) {
                     var oldCond = oldAST[0];
-                    var newCond = newAST[0]
+                    var newCond = newAST[0];
                     var newBody = newAST[1];
                     if (oldCond.toString() === newBody.toString()) {
                         copyAnnos(findScopeNode(oldAST), newCond, dryRun);
@@ -170,23 +170,24 @@ define(function(require, exports, module) {
                 }
                 return false;
             }
-            if (newAST[j].length)
+            if (newAST[j].length) {
                 if (!copyAnnosTop(oldAST[i], newAST[j], dryRun))
                     return false;
+            } else if (!dryRun && newAST[j].$pos) {
+                copyAnnos(oldAST[j], newAST[j]);
+            }
             
         }
         return true;
     }
     
-    function copyAnnos(oldNode, newNode, dryRun) {
-        if (dryRun || !oldNode.annos)
+    function copyAnnos(oldNode, newNode) {
+        newNode.oldNode = oldNode.oldNode || oldNode;
+        newNode.oldNode.$pos = newNode.$pos;
+        
+        if (!oldNode.annos)
             return;
-        if (!newNode.annos)
-            newNode.annos = {};
-        for (var anno in oldNode.annos) {
-            if (oldNode.annos.hasOwnProperty(anno) && anno !== "origin")
-                newNode.annos[anno] = oldNode.annos[anno];
-        }
+        newNode.annos = oldNode.annos;
     }
     
     function findScopeNode(ast) {
