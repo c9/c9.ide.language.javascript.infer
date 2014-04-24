@@ -174,7 +174,7 @@ define(function(require, exports, module) {
                 if (!copyAnnosTop(oldAST[i], newAST[j], dryRun))
                     return false;
             } else if (!dryRun && newAST[j].$pos) {
-                copyAnnos(oldAST[j], newAST[j]);
+                copyAnnos(oldAST[i], newAST[j]);
             }
             
         }
