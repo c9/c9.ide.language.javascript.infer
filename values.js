@@ -284,7 +284,7 @@ function fromJSON(json) {
         var prop = properties[p];
         // Allow property values as [v] or {values: [v]}
         if (!prop.forEach) {
-            prop.values.forEach(function(v) {
+            (prop.values || []).forEach(function(v) {
                 value.hint(p.substr(1), fromJSON(v), PROPER, v.path || json.path, v.row);
             });
         }
