@@ -22,7 +22,7 @@ exports.alert = alert;
 (function() {
     this.setupRoutes = function(httpServer, sessionStore) {
         var config = this.config;
-        var _self  = this;
+        var _self = this;
         
         exports.httpServer = httpServer;
         
@@ -48,7 +48,7 @@ exports.alert = alert;
         httpServer.use(Auth([
             Auth.Anonymous(),
             Auth.Http({
-                useDigest : false,
+                useDigest: false,
                 validatePassword: function(username, password, cbSuccess, cbFailure) {
                     return CP.authCheck(config.controlpanel, username, 
                         password, cbSuccess, cbFailure);

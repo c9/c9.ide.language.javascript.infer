@@ -49,18 +49,18 @@ function valueToMatch(container, v, name, isPackage, isContextual) {
         var showArgs = tooltip.extractArgumentNames(v, true);
         var insertArgs = "opt" in showArgs ? tooltip.extractArgumentNames(v, false) : showArgs;
         return {
-            id           : name,
-            guid         : v.guid + "[0" + name + "]",
-            name         : name + "(" + showArgs.argNames.join(", ") + ")",
-            replaceText  : name + (insertArgs.argNames.length === 0 && v.guid && v.guid.indexOf("es5:") !== 0 ? "()" : "(^^)"),
-            icon         : "method",
-            priority     : PRIORITY_INFER,
+            id: name,
+            guid: v.guid + "[0" + name + "]",
+            name: name + "(" + showArgs.argNames.join(", ") + ")",
+            replaceText: name + (insertArgs.argNames.length === 0 && v.guid && v.guid.indexOf("es5:") !== 0 ? "()" : "(^^)"),
+            icon: "method",
+            priority: PRIORITY_INFER,
             inferredNames: showArgs.inferredNames,
-            doc          : v.doc,
-            docUrl       : v.docUrl,
-            isFunction   : true,
-            type         : v.properties._return && getGuid(v.properties._return.values[0]),
-            isContextual : isContextual
+            doc: v.doc,
+            docUrl: v.docUrl,
+            isFunction: true,
+            type: v.properties._return && getGuid(v.properties._return.values[0]),
+            isContextual: isContextual
         };
     }
     else {
@@ -68,16 +68,16 @@ function valueToMatch(container, v, name, isPackage, isContextual) {
             !(container && container.properties && container.properties["_" + name])
             || container.properties["_" + name].confidence > 10;
         return {
-            id           : name,
-            guid         : container ? container.guid + "/" + name : v.guid + "[0" + name + "]",
-            name         : name,
-            replaceText  : name,
-            doc          : v.doc,
-            docUrl       : v.docUrl,
-            icon         : "property",
-            priority     : name === "__proto__" ? PRIORITY_INFER_LOW : PRIORITY_INFER,
-            type         : !isPackage && getGuid(v.properties.___proto__ ? v.properties.___proto__.values[0] : v.guid),
-            isContextual : isHighConfidence
+            id: name,
+            guid: container ? container.guid + "/" + name : v.guid + "[0" + name + "]",
+            name: name,
+            replaceText: name,
+            doc: v.doc,
+            docUrl: v.docUrl,
+            icon: "property",
+            priority: name === "__proto__" ? PRIORITY_INFER_LOW : PRIORITY_INFER,
+            type: !isPackage && getGuid(v.properties.___proto__ ? v.properties.___proto__.values[0] : v.guid),
+            isContextual: isHighConfidence
         };
     }
 }
@@ -201,7 +201,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 var variableNames = scope.getVariableNames();
                 if (this.cons === 'Var') { // Delete current var from proposals if not properly declared anywhere
                     var varName = this[0].value;
-                    if(variableNames.indexOf(varName) !== -1 && !scope.get(varName).isProperDeclaration())
+                    if (variableNames.indexOf(varName) !== -1 && !scope.get(varName).isProperDeclaration())
                         variableNames.splice(variableNames.indexOf(varName), 1);
                 }
                 var matches = completeUtil.findCompletions(identifier, variableNames);
@@ -289,14 +289,14 @@ completer.proposeClosure = function(node, doc, pos, completions) {
             var codeName = code.split(/\n/)[0] + "}";
             var guid = v.guid + "-argfun" + (id++);
             completions[guid] = {
-                id          : codeName,
-                guid        : guid,
-                name        : codeName,
-                replaceText : code,
-                doc         : v.fargs && v.fargs.doc,
-                docUrl      : v.fargs && v.fargs.docUrl,
-                icon        : "method",
-                priority    : PRIORITY_INFER_HIGH
+                id: codeName,
+                guid: guid,
+                name: codeName,
+                replaceText: code,
+                doc: v.fargs && v.fargs.doc,
+                docUrl: v.fargs && v.fargs.docUrl,
+                icon: "method",
+                priority: PRIORITY_INFER_HIGH
             };
         });
     });
@@ -316,13 +316,13 @@ completer.proposeObjectProperty = function(objectInit, identifier, completions) 
             return;
         v.fargs[listIndex].properties.forEach(function(property) {
             completions["_$p$" + property.id] = {
-                id:          property.id,
-                name:        property.id,
+                id: property.id,
+                name: property.id,
                 replaceText: property.id,
-                doc:         property.doc,
-                docUrl:      property.docUrl,
-                icon:        "property",
-                priority:    PRIORITY_INFER
+                doc: property.doc,
+                docUrl: property.docUrl,
+                icon: "property",
+                priority: PRIORITY_INFER
             };
         });
     });

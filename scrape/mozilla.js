@@ -9,7 +9,7 @@ var patch = require("./patch.js");
 
 function getRootObjects(callback) {
     request({url: 'https://developer.mozilla.org/en/JavaScript/Reference'}, function(err, response) {
-        if(err) throw err;
+        if (err) throw err;
         var globalObjectsRegex = /https:\/\/developer.mozilla.org\/en\/JavaScript\/Reference\/Global_Objects\/([a-zA-Z0-9]+)/g;
         var match, matches = [];
         while (match = globalObjectsRegex.exec(response.body)) {
@@ -36,7 +36,7 @@ function parseProperties(rootObject, html, intoObject, guidPrefix, isFn) {
 function getObjectInfo(rootObject, callback) {
     console.log("Requesting: ", rootObject);
     request({url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject}, function(err, response) {
-        if(err) throw err;
+        if (err) throw err;
         var data = {object: {}, instance: {}};
         
 
@@ -63,7 +63,7 @@ function getObjectInfo(rootObject, callback) {
 function getPropertyInfo(data, callback) {
     console.log("Fetching: ", data[0].docUrl);
     request({url: data[0].docUrl}, function(err, response) {
-        if(err) throw err;
+        if (err) throw err;
         var description =
             response.body.split(/>\s*Summary\s*<\/h[^>]*>/)[1] ||
             response.body.split(/>\s*Description\s*<\/h[^>]*>/)[1] ||
@@ -77,9 +77,9 @@ function getPropertyInfo(data, callback) {
 getRootObjects(function(rootObjects) {
     var json = {};
     asyncForEach(rootObjects, function(rootObject, next) {
-        if(rootObject.match(/^[a-z]/)) {
+        if (rootObject.match(/^[a-z]/)) {
             request({url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject}, function(err, response) {
-                if(err) throw err;
+                if (err) throw err;
                 var obj = {
                     guid: "es5:" + rootObject,
                     docUrl: "https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/" + rootObject,
@@ -106,7 +106,7 @@ getRootObjects(function(rootObjects) {
                                 }]
                             }
                         };
-                        for(var p in data.object) {
+                        for (var p in data.object) {
                             builtin.properties[p] = data.object[p];
                         }
                         console.log(JSON.stringify(builtin, null, 2));

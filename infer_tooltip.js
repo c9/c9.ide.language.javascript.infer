@@ -305,7 +305,7 @@ function valueCollToClosure(name, coll) {
             var args = [];
             var fargs = v.getFargs();
             var argColl = extractArgumentValues(v, fargs, idx);
-            for(var idx = 0; !argColl.isEmpty() || idx < fargs.length; idx++) {
+            for (var idx = 0; !argColl.isEmpty() || idx < fargs.length; idx++) {
                 var argName;
                 if (fargs[idx])
                     argName =  fargs[idx].id || fargs[idx];

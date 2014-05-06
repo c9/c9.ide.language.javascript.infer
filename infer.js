@@ -8,23 +8,23 @@
 
 define(function(require, exports, module) {
 
-var values          = require("./values");
-var Value           = values.Value;
+var values = require("./values");
+var Value = values.Value;
 var ValueCollection = values.ValueCollection;
-var FunctionValue   = values.FunctionValue;
-var instantiate     = values.instantiate;
-var valueFromJSON   = values.fromJSON;
-var lookupValue     = values.lookupValue;
-var scopeAnalyzer   = require("plugins/c9.ide.language.javascript/scope_analyzer");
-var Scope           = scopeAnalyzer.Scope;
-var Variable        = scopeAnalyzer.Variable;
-var PROPER          = scopeAnalyzer.PROPER;
-var MAYBE_PROPER    = scopeAnalyzer.MAYBE_PROPER;
-var NOT_PROPER      = scopeAnalyzer.NOT_PROPER;
-var KIND_PACKAGE    = scopeAnalyzer.KIND_PACKAGE;
-var KIND_DEFAULT    = scopeAnalyzer.KIND_DEFAULT;
-var path            = require("./path");
-var completeUtil    = require("plugins/c9.ide.language/complete_util");
+var FunctionValue = values.FunctionValue;
+var instantiate = values.instantiate;
+var valueFromJSON = values.fromJSON;
+var lookupValue = values.lookupValue;
+var scopeAnalyzer = require("plugins/c9.ide.language.javascript/scope_analyzer");
+var Scope = scopeAnalyzer.Scope;
+var Variable = scopeAnalyzer.Variable;
+var PROPER = scopeAnalyzer.PROPER;
+var MAYBE_PROPER = scopeAnalyzer.MAYBE_PROPER;
+var NOT_PROPER = scopeAnalyzer.NOT_PROPER;
+var KIND_PACKAGE = scopeAnalyzer.KIND_PACKAGE;
+var KIND_DEFAULT = scopeAnalyzer.KIND_DEFAULT;
+var path = require("./path");
+var completeUtil = require("plugins/c9.ide.language/complete_util");
 require('treehugger/traverse');
 
 var registeredSummaries = typeof window !== "undefined" && {

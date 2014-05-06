@@ -1,8 +1,8 @@
 define(function(require, exports, module) {
 
-var PROPER       = require('plugins/c9.ide.language.javascript/scope_analyzer').PROPER;
+var PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').PROPER;
 var MAYBE_PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').MAYBE_PROPER;
-var NOT_PROPER   = require('plugins/c9.ide.language.javascript/scope_analyzer').NOT_PROPER;
+var NOT_PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').NOT_PROPER;
 
 var valueRegistry = {};
 

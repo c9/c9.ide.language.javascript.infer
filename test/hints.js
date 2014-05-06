@@ -31,7 +31,7 @@
 
 var Variable = exports.module = function Variable(declaration) {
     this.declarations = [];
-    if(declaration)
+    if (declaration)
         this.declarations.push(declaration);
     this.uses = [];
     this.values = [];

@@ -26,16 +26,16 @@ function analyze(path) {
         Value.enterContext(path + ':');
         infer.staticEval(scope, node);
         var exportValue;
-        if(scope.get('module'))
+        if (scope.get('module'))
             scope.get('module').values.forEach(function(v) {
                 exportValue = v;
             });
-        else if(scope.get('exports'))
+        else if (scope.get('exports'))
             scope.get('exports').values.forEach(function(v) {
                 exportValue = v;
             });
         var extern = externalize(path, exportValue);
-        if(exportValue)
+        if (exportValue)
             extern[path] = exportValue.guid;
         fs.writeFileSync(path + '.jst', JSON.stringify(extern));
         console.log(JSON.stringify(extern, null, 2));

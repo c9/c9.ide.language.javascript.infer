@@ -60,7 +60,7 @@ var Editor =function(renderer, session) {
     this.container = container;
     this.renderer = renderer;
     
-    this.textInput  = new TextInput(renderer.getTextAreaContainer(), this);
+    this.textInput = new TextInput(renderer.getTextAreaContainer(), this);
     this.keyBinding = new KeyBinding(this);
 
     // TODO detect touch event support
@@ -661,7 +661,7 @@ var Editor =function(renderer, session) {
             return;
 
         if (this.selection.isEmpty()){
-            if(dir == "left")
+            if (dir == "left")
                 this.selection.selectLeft();
             else
                 this.selection.selectRight();
@@ -784,10 +784,10 @@ var Editor =function(renderer, session) {
             var indentString;
 
             if (this.session.getUseSoftTabs()) {
-                var size        = session.getTabSize(),
-                    position    = this.getCursorPosition(),
-                    column      = session.documentToScreenColumn(position.row, position.column),
-                    count       = (size - column % size);
+                var size = session.getTabSize(),
+                    position = this.getCursorPosition(),
+                    column = session.documentToScreenColumn(position.row, position.column),
+                    count = (size - column % size);
 
                 indentString = lang.stringRepeat(" ", count);
             } else

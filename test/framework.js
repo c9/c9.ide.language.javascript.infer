@@ -20,25 +20,25 @@ function canBeInstanceOf(n, guid) {
     var values = infer.inferValues(n);
     //console.log(values);
     values.forEach(function(v) {
-        if(v.guid)
+        if (v.guid)
             console.log("Could be: " + v.guid);
-        if(v.guid === guid) {
+        if (v.guid === guid) {
             yup = true;
             return;
         }
         v.get('__proto__').forEach(function(v) {
-            if(v.guid) {
+            if (v.guid) {
                 console.log("Could be: " + v.guid);
             }
-            if(v.guid === guid) {
+            if (v.guid === guid) {
                 yup = true;
             }
         });
     });
-    if(!yup && guid.search(/\/prototype$/) === -1) {
+    if (!yup && guid.search(/\/prototype$/) === -1) {
         return canBeInstanceOf(n, guid + "/prototype");
     }
-    else if(!yup) {
+    else if (!yup) {
         console.log(""+n);
         console.log("Not what we expected: " + util.inspect(values, null, 7));
     }
@@ -50,12 +50,12 @@ function extractTypeAnnotations(code) {
     var annotations = [];
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
-        if(line.indexOf('//#') === 0) { // annotation line
+        if (line.indexOf('//#') === 0) { // annotation line
             var regex = /\^ ([^ \n\|]+)/g;
             var match;
-            while(match = regex.exec(line)) {
+            while (match = regex.exec(line)) {
                 var firstNonAnnoLineIdx = i-1;
-                while(firstNonAnnoLineIdx > 0 && lines[firstNonAnnoLineIdx].indexOf('//#') === 0)
+                while (firstNonAnnoLineIdx > 0 && lines[firstNonAnnoLineIdx].indexOf('//#') === 0)
                     firstNonAnnoLineIdx--;
                 annotations.push({
                     line: firstNonAnnoLineIdx,
@@ -92,9 +92,9 @@ exports.buildTest = function(filename, exportSymbol) {
                 assert.ok(canBeInstanceOf(n, anno.type), "Went wrong on this one: " + JSON.stringify(anno));
             }
             var exportValue;
-            if(exportSymbol) scope.get(exportSymbol).values.forEach(function(v) { exportValue = v; });
+            if (exportSymbol) scope.get(exportSymbol).values.forEach(function(v) { exportValue = v; });
             var extern = externalize(filename, exportValue);
-            if(exportSymbol) extern[exportSymbol] = exportValue.guid;
+            if (exportSymbol) extern[exportSymbol] = exportValue.guid;
             require('fs').writeFileSync(__dirname + "/" + filename + '.jst', JSON.stringify(extern, null, 2));
         }
     };

@@ -6,7 +6,7 @@ var o = {
 
 var o = {
     
-    init : function() {
+    init: function() {
         var _self = this;
         
         if (!editors.currentEditor || !editors.currentEditor.amlEditor)
