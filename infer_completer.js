@@ -207,6 +207,8 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 var matches = completeUtil.findCompletions(identifier, variableNames);
                 for (var i = 0; i < matches.length; i++) {
                     var v = scope.get(matches[i]);
+                    if (!v)
+                        continue;
                     v.values.forEach(function(propVal) {
                         var match = valueToMatch(null, propVal, matches[i]);
                         if (!match.name)
