@@ -1,5 +1,3 @@
-var globalRequire = require;
-
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('plugins/c9.ide.language/base_handler');
@@ -56,6 +54,9 @@ handler.tooltip = function(doc, fullAst, cursorPos, currentNode, callback) {
         var basePath = path.getBasePath(handler.path, handler.workspaceDir);
         var filePath = path.canonicalizePath(handler.path, basePath);
         astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, cursorPos, function(fullAst, currentNode) {
+            if (!currentNode)
+                return callback();
+            
             callNode = getCallNode(currentNode, cursorPos); // get analyzed ast's callNode
             var targetNode = callNode ? callNode[0] : currentNode;
             var rangeNode = callNode && callNode.getPos().sc < 99999 ? callNode : currentNode;
