@@ -25,6 +25,9 @@ handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
     var filePath = path.canonicalizePath(handler.path, basePath);
     
     astUpdater.updateOrReanalyze(doc, fullAst, filePath, basePath, pos, function(fullAst, currentNode) {
+        if (!currentNode)
+            return callback();
+        
         currentNode.rewrite(
             'PropAccess(o, p)', function(b, node) {
                 var values = infer.inferValues(b.o);
