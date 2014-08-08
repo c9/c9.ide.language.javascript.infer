@@ -201,7 +201,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                 var variableNames = scope.getVariableNames();
                 if (this.cons === 'Var') { // Delete current var from proposals if not properly declared anywhere
                     var varName = this[0].value;
-                    if (variableNames.indexOf(varName) !== -1 && !scope.get(varName).isProperDeclaration())
+                    if (variableNames.indexOf(varName) !== -1 && (!scope.get(varName) || !scope.get(varName).isProperDeclaration())
                         variableNames.splice(variableNames.indexOf(varName), 1);
                 }
                 var matches = completeUtil.findCompletions(identifier, variableNames);
