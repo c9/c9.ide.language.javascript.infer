@@ -254,7 +254,7 @@ var extractArgumentNames = handler.extractArgumentNames = function(v, showOption
         if (fargs[idx]) {
             argName =  fargs[idx].id || fargs[idx];
             if (showOptionals && fargs[idx].opt) {
-                argName = "[" + argName + "]";
+                argName = argName + "?";
                 opt = opt || idx;
             }
         }
