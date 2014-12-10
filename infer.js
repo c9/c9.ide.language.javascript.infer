@@ -164,8 +164,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             staticEval(scope, b.e);
             scope.hintMultiple(b.name.value, inferValues(b.e), PROPER, filePath, tryGetRow(node));
             return this; // Stop traversal
-        },
-        /*
+        }, 
         'Assign(PropAccess(e1, prop), e2)', function(b, node) {
             staticEval(scope, b.e1);
             var vs = inferValues(b.e1);
@@ -207,14 +206,12 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             }
             return this;
         },
-        */
         "Assign(Var(name), e)", function(b) {
             staticEval(scope, this[0]);
             staticEval(scope, b.e);
             scope.hintMultiple(b.name.value, inferValues(b.e), MAYBE_PROPER);
             return this;
         },
-        /*
         "ObjectInit(inits)", function(b) {
             // When finding an object literal with 
             var v = new Value("objLit");
@@ -356,7 +353,6 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             scope.fn && scope.fn.hintMultiple('return', inferValues(b.e), PROPER);
             return this;
         },
-        */
         "Var(name)", function(b) {
             var vs = scope.get(b.name.value);
             if (!vs) {
@@ -376,9 +372,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
                     scope.hint(b.x.value, lookupValue("es5:String"));
                 }
             );
-        }
-        /*
-        ,
+        },
         "Op(op, e1, e2)", function(b) {
             staticEval(scope, b.e1);
             staticEval(scope, b.e2);
@@ -395,7 +389,6 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             }
             return this;
         }
-        */
     );
     return scope;
 }
@@ -416,7 +409,6 @@ function inferValues(e) {
             values.add(lookupValue("es5:RegExp/prototype"));
             return this;
         },
-        /*
         "Num(_)", function() {
             values.add(lookupValue("es5:Number/prototype"));
             return this;
@@ -434,7 +426,6 @@ function inferValues(e) {
             values.add(lookupValue("es5:Array/prototype"));
             return this;
         },
-        */
         "Var(nm)", function(b) {
             var scope = this.getAnnotation("scope");
             if (!scope) {
@@ -455,9 +446,7 @@ function inferValues(e) {
             });
             values.add(v);
             return this;
-        }
-        /*
-        ,
+        },
         "New(e, args)", function(b) {
             var vs = inferValues(b.e);
             vs.forEach(function(fn) {
@@ -569,7 +558,6 @@ function inferValues(e) {
             }
             return this;
         }
-        */
     );
     return values;
 }
