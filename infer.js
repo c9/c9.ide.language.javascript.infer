@@ -29,7 +29,7 @@ require('treehugger/traverse');
 
 var registeredSummaries = typeof window !== "undefined" && {
     $builtin1$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.jst")),
-    $builtin2$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.custom.jst")),
+    // $builtin2$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.custom.jst")),
     // $builtin3$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.nodejs.jst"))
 };
 
