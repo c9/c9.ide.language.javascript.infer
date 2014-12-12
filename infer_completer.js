@@ -41,6 +41,11 @@ completer.getCompletionRegex = function() {
     return (/^[\.]$/);
 };
 
+completer.getMaxFileSizeSupported = function() {
+    // .25 of current base_handler default
+    return .25 * 10 * 1000 * 80;
+};
+
 function valueToMatch(container, v, name, isPackage, isContextual) {
     // Node.js and the default behavior of require.js is not adding the .js extension
     if (isPackage)
