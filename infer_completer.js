@@ -29,7 +29,9 @@ var PRIORITY_INFER_HIGH = 5;
 var completer = module.exports = Object.create(baseLanguageHandler);
     
 completer.handlesLanguage = function(language) {
-    return language === 'javascript';
+    // Note that we don't really support jsx here,
+    // but rather tolerate it using error recovery...
+    return language === "javascript" || language === "jsx";
 };
 
 completer.getIdentifierRegex = function() {

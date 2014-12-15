@@ -13,7 +13,9 @@ var path = require("./path");
 var astUpdater = require("./ast_updater");
 
 handler.handlesLanguage = function(language) {
-    return language === 'javascript';
+    // Note that we don't really support jsx here,
+    // but rather tolerate it using error recovery...
+    return language === "javascript" || language === "jsx";
 };
 
 handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {

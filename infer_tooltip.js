@@ -12,7 +12,9 @@ var astUpdater = require("./ast_updater");
 var handler = module.exports = Object.create(baseLanguageHandler);
     
 handler.handlesLanguage = function(language) {
-    return language === 'javascript';
+    // Note that we don't really support jsx here,
+    // but rather tolerate it using error recovery...
+    return language === "javascript" || language === "jsx";
 };
 
 handler.handlesEditor = function() {
