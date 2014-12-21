@@ -24,9 +24,10 @@ var astUpdater = require("./ast_updater");
 // Should be used sparingly, since they disrupt the sorting order
 var PRIORITY_INFER_LOW = 3;
 var PRIORITY_INFER = 4;
-var PRIORITY_INFER_HIGH = 5;
+var PRIORITY_INFER_HIGH = 6;
 
 var completer = module.exports = Object.create(baseLanguageHandler);
+var extraModuleCompletions;
     
 completer.handlesLanguage = function(language) {
     // Note that we don't really support jsx here,
@@ -46,6 +47,10 @@ completer.getCompletionRegex = function() {
 completer.getMaxFileSizeSupported = function() {
     // .25 of current base_handler default
     return .25 * 10 * 1000 * 80;
+};
+
+completer.setExtraModules = function(extraModules) {
+    extraModuleCompletions = extraModules;
 };
 
 function valueToMatch(container, v, name, isPackage, isContextual) {
@@ -250,6 +255,9 @@ completer.proposeRequire = function(identifier, expand, scope, completions, base
     if (basePath || basePath === "")
         identifier = path.canonicalizePath(identifier, basePath).replace(/^\.$/, "");
     
+    if (expand === EXPAND_REQUIRE && extraModuleCompletions)
+        names = names.concat(Object.keys(extraModuleCompletions));
+
     var matches = expand === EXPAND_REQUIRE
         ? filterRequireSubstring(identifier, names)
         : completeUtil.findCompletions(identifier === "/" ? "" : identifier, names);
@@ -265,7 +273,19 @@ completer.proposeRequire = function(identifier, expand, scope, completions, base
     matches = matches.slice(0, REQUIRE_PROPOSALS_MAX);
 
     for (var i = 0; i < matches.length; i++) {
-        var v = scope.get(matches[i], KIND_PACKAGE);
+        var match = matches[i];
+        var v = scope.get(match, KIND_PACKAGE);
+        if (!v && expand === EXPAND_REQUIRE) {
+            return completions["_" + match] = {
+                id: match,
+                icon: "package",
+                name: 'require("' + match + '")',
+                replaceText: 'require("' + match + '")',
+                doc: "Origin: node<br/>"
+                    + (extraModuleCompletions[match].doc || ""),
+                priority: PRIORITY_INFER_HIGH
+            };
+        }
         v.values.forEach(function(propVal) {
             var match = valueToMatch(null, propVal, matches[i], true, expand);
             match.icon = "package";
