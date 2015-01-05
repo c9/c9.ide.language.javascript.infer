@@ -1,5 +1,3 @@
-var globalRequire = require;
-
 define(function(require, exports, module) {
 
 var baseLanguageHandler = require('plugins/c9.ide.language/base_handler');
@@ -16,8 +14,7 @@ var REQUIRE_ID_REGEX = /(?!["'])./;
 var FunctionValue = require('./values').FunctionValue;
 var completeUtil = require("plugins/c9.ide.language/complete_util");
 var traverse = require("treehugger/traverse");
-var tree = require("treehugger/tree");
-var tooltip = require("./infer_tooltip");
+var args = require("./infer_arguments");
 var astUpdater = require("./ast_updater");
 
 // Completion priority levels
@@ -58,8 +55,8 @@ function valueToMatch(container, v, name, isPackage, isContextual) {
     if (isPackage)
         name = name.replace(/\.js$/, "");
     if ((v instanceof FunctionValue || v.properties._return) && !isPackage) {
-        var showArgs = tooltip.extractArgumentNames(v, true);
-        var insertArgs = "opt" in showArgs ? tooltip.extractArgumentNames(v, false) : showArgs;
+        var showArgs = args.extractArgumentNames(v, true);
+        var insertArgs = "opt" in showArgs ? args.extractArgumentNames(v, false) : showArgs;
         return {
             id: name,
             guid: v.guid + "[0" + name + "]",
@@ -308,10 +305,10 @@ completer.proposeRequire = function(identifier, expand, scope, completions, base
 
 completer.proposeClosure = function(node, doc, pos, completions) {
     node.rewrite('Call(f, args)', function(b) {
-        var argIndex = tooltip.getArgIndex(this, doc, pos);
+        var argIndex = args.getArgIndex(this, doc, pos);
         var id = 0;
         infer.inferValues(b.f).forEach(function(v) {
-            var argNames = tooltip.extractArgumentNames(v, false);
+            var argNames = args.extractArgumentNames(v, false);
             var code = argNames.argValueCodes[argIndex];
             if (!code)
                 return;
