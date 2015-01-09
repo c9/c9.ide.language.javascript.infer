@@ -6,6 +6,7 @@ var path = require('./path');
 var KIND_DEFAULT = require('plugins/c9.ide.language.javascript/scope_analyzer').KIND_DEFAULT;
 var KIND_PACKAGE = require('plugins/c9.ide.language.javascript/scope_analyzer').KIND_PACKAGE;
 var KIND_EVENT = require('plugins/c9.ide.language.javascript/scope_analyzer').KIND_EVENT;
+var PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').PROPER;
 var EXPAND_STRING = 1;
 var EXPAND_REQUIRE = 2;
 var EXPAND_REQUIRE_LIMIT = 5;
@@ -21,6 +22,7 @@ var astUpdater = require("./ast_updater");
 // Should be used sparingly, since they disrupt the sorting order
 var PRIORITY_INFER_LOW = 3;
 var PRIORITY_INFER = 4;
+var PRIORITY_INFER_TERN = 5;
 var PRIORITY_INFER_HIGH = 6;
 
 var completer = module.exports = Object.create(baseLanguageHandler);
@@ -218,6 +220,15 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                     var v = scope.get(matches[i]);
                     if (!v)
                         continue;
+                    if (!v.values.length && v.properDeclarationConfidence >= PROPER) {
+                        completions[matches[i]] = {
+                            id: matches[i],
+                            name: matches[i],
+                            replaceText: matches[i],
+                            icon: "property",
+                            priority: PRIORITY_INFER_TERN
+                        };
+                    }
                     v.values.forEach(function(propVal) {
                         var match = valueToMatch(null, propVal, matches[i]);
                         if (!match.name)
