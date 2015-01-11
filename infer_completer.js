@@ -220,7 +220,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
                     var v = scope.get(matches[i]);
                     if (!v)
                         continue;
-                    if (!v.values.length && v.properDeclarationConfidence >= PROPER) {
+                    if (!v.values.length && v.properDeclarationConfidence >= PROPER && currentNode.cons === "Var") {
                         completions[matches[i]] = {
                             id: matches[i],
                             name: matches[i],
