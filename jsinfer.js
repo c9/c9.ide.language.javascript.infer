@@ -2,7 +2,6 @@
  * Inference-based code completion for the Cloud9
  *
  * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
     main.consumes = [
