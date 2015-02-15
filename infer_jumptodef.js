@@ -1,7 +1,7 @@
 /**
  * Inference-based JavaScript jump to dejufinition.
  *
- * @copyright 2011, Ajax.org B.V.
+ * @copyright 2013, Ajax.org B.V.
  */
 define(function(require, exports, module) {
 
