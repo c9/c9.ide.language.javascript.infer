@@ -156,7 +156,7 @@ function externalize(rootPrefix, exportValue) {
             exportJSON[keys[i]] = registry[keys[i]].toJSON();
         }
     }
-    while (compact(exportJSON));
+    while (compact(exportJSON)) {}
     return exportJSON;
 }
 

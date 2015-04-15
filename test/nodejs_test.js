@@ -1,10 +1,10 @@
-
+#!/usr/bin/env node
+"use strict";
 "use server";
+"use mocha";
 
-var testFw = require('./framework');
+require("c9/inline-mocha")(module);
 
-module.exports = testFw.buildTest('nodejs.js', 'exports');
-
-if (typeof module !== "undefined" && module === require.main) {
-    require("asyncjs").test.testcase(module.exports).exec()
-}
+describe(__filename, function() {
+    it("should analyze 'nodejs.js'", require('./framework').buildTest("nodejs.js"));
+});

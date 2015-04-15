@@ -8,6 +8,10 @@
         "type": "git",
         "url": "http://github.com/c9/c9.ide.language.javascript.infer.git"
     },
+    "scripts": {
+        "cov": "istanbul cover _mocha $(find . | grep '_test.js$')",
+        "test": "mocha $(find . | grep '_test.js$')"
+     },
     "plugins": {
         "jsinfer": {}
     },

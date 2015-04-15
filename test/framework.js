@@ -69,33 +69,32 @@ function extractTypeAnnotations(code) {
 }
 
 exports.buildTest = function(filename, exportSymbol) {
-    var code = fs.readFileSync(__dirname + "/" + filename, 'utf-8');
-    var builtins1 = fs.readFileSync(__dirname + "/../builtin.jst", 'utf-8');
-    var builtins2 = fs.readFileSync(__dirname + "/../builtin.custom.jst", 'utf-8');
-    var builtins3 = fs.readFileSync(__dirname + "/../builtin.nodejs.jst", 'utf-8');
-    var builtins = [JSON.parse(builtins1), JSON.parse(builtins2), JSON.parse(builtins3)];
-    var node = parser.parse(code);
-    traverse.addParentPointers(node);
-    scopeAnalyzer.analyze(code, node, function() { /* Risky, but we know this is sync in this context */ });
-    Value.enterContext('es5:unnamed');
-    var typeAnnotations = extractTypeAnnotations(code);
-    var scope = infer.createRootScope(node.getAnnotation("scope"), builtins);
-    Value.leaveContext();
-    Value.enterContext(filename);
-    infer.staticEval(scope, node);
-    //console.log("AST: "+node);
-    return {
-        test: function() {
-            for (var i = 0; i < typeAnnotations.length; i++) {
-                var anno = typeAnnotations[i];
-                var n = node.findNode(anno);
-                assert.ok(canBeInstanceOf(n, anno.type), "Went wrong on this one: " + JSON.stringify(anno));
-            }
-            var exportValue;
-            if (exportSymbol) scope.get(exportSymbol).values.forEach(function(v) { exportValue = v; });
-            var extern = externalize(filename, exportValue);
-            if (exportSymbol) extern[exportSymbol] = exportValue.guid;
-            require('fs').writeFileSync(__dirname + "/" + filename + '.jst', JSON.stringify(extern, null, 2));
+    return function(done) {
+        var code = fs.readFileSync(__dirname + "/" + filename, 'utf-8');
+        var builtins1 = fs.readFileSync(__dirname + "/../builtin.jst", 'utf-8');
+        var builtins2 = fs.readFileSync(__dirname + "/../builtin.custom.jst", 'utf-8');
+        var builtins3 = fs.readFileSync(__dirname + "/../builtin.nodejs.jst", 'utf-8');
+        var builtins = [JSON.parse(builtins1), JSON.parse(builtins2), JSON.parse(builtins3)];
+        var node = parser.parse(code);
+        traverse.addParentPointers(node);
+        scopeAnalyzer.analyze(code, node, function() { /* Risky, but we know this is sync in this context */ });
+        Value.enterContext('es5:unnamed');
+        var typeAnnotations = extractTypeAnnotations(code);
+        var scope = infer.createRootScope(node.getAnnotation("scope"), builtins);
+        Value.leaveContext();
+        Value.enterContext(filename);
+        infer.staticEval(scope, node);
+        // console.log("AST: "+node);
+        
+        for (var i = 0; i < typeAnnotations.length; i++) {
+            var anno = typeAnnotations[i];
+            var n = node.findNode(anno);
+            assert.ok(canBeInstanceOf(n, anno.type), "Went wrong on this one: " + JSON.stringify(anno));
         }
+        var exportValue;
+        if (exportSymbol) scope.get(exportSymbol).values.forEach(function(v) { exportValue = v; });
+        var extern = externalize(filename, exportValue);
+        if (exportSymbol) extern[exportSymbol] = exportValue.guid;
+        require('fs').writeFile(__dirname + "/" + filename + '.jst', JSON.stringify(extern, null, 2), done);
     };
 };
