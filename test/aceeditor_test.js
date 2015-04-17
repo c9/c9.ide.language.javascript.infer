@@ -6,6 +6,6 @@
 require("c9/inline-mocha")(module);
 
 describe(__filename, function() {
-    this.timeout(6000);
+    this.timeout(20000);
     it("should analyze 'aceeditor.js'", require('./framework').buildTest("aceeditor.js"));
 });
