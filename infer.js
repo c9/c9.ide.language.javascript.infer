@@ -27,11 +27,14 @@ var path = require("./path");
 var completeUtil = require("plugins/c9.ide.language/complete_util");
 require('treehugger/traverse');
 
-var registeredSummaries = typeof window !== "undefined" && {
-    $builtin1$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.jst")),
-    // $builtin2$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.custom.jst")),
-    // $builtin3$: JSON.parse(completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.nodejs.jst"))
-};
+var registeredSummaries = {};
+
+if (typeof window !== "undefined") {
+    completeUtil.fetchTextSync("plugins/c9.ide.language.javascript.infer/builtin.jst", function(err, result) {
+        if (err) return console.error(err);
+        registeredSummaries.$builtin1$ = JSON.parse(result);
+    });
+}
 
 var filePath;
 var basePath;
