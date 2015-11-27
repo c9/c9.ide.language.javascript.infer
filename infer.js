@@ -30,7 +30,7 @@ require('treehugger/traverse');
 var registeredSummaries = {};
 
 if (typeof window !== "undefined") {
-    completeUtil.fetchTextSync("plugins/c9.ide.language.javascript.infer/builtin.jst", function(err, result) {
+    completeUtil.fetchText("plugins/c9.ide.language.javascript.infer/builtin.jst", function(err, result) {
         if (err) return console.error(err);
         registeredSummaries.$builtin1$ = JSON.parse(result);
     });
