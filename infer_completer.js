@@ -100,6 +100,16 @@ function getGuid(valueOrGuid) {
     return result.substr && result.substr(-11) !== "/implReturn" ? result : undefined;
 }
 
+completer.predictNextCompletion = function(doc, fullAst, pos, options, callback) {
+    var predicted = options.matches.filter(function(m) {
+        return m.priority >= PRIORITY_INFER
+            && m.icon !== "method";
+    });
+    if (predicted.length !== 1)
+        return callback();
+    callback(null, { predicted: predicted[0].replaceText + "." });
+};
+
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     if (!currentNode)
         return callback();
