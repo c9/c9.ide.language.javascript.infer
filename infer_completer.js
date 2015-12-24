@@ -107,7 +107,10 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
     });
     if (predicted.length !== 1)
         return callback();
-    callback(null, { predicted: predicted[0].replaceText + "." });
+    callback(null, {
+        predicted: predicted[0].replaceText + ".",
+        showEarly: predicted[0].icon === "property"
+    });
 };
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
