@@ -17,8 +17,8 @@ handler.handlesLanguage = function(language) {
     return language === "javascript" || language === "jsx";
 };
 
-handler.jumpToDefinition = function(doc, fullAst, pos, options, callback) {
-    if (!fullAst || !options.node)
+handler.jumpToDefinition = function(doc, fullAst, pos, currentNode, callback) {
+    if (!fullAst || !currentNode)
         return callback();
     
     var results = [];
