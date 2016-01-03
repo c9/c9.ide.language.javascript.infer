@@ -44,9 +44,16 @@ completer.getCompletionRegex = function() {
 };
 
 completer.getExpressionPrefixRegex = function() {
-     // Match strings that can be and expression or its prefix, i.e.
-     // keywords/identifiers followed by whitespace and/or operators
-    return /(\b\w+\s+|\b(if|while|for)\s*\(|([{[\-+*%<>!|&]|==|!=)\s*)+/;
+     // Match strings that can be an expression or its prefix
+    return new RegExp(
+        // 'if/while/for ('
+        "(\\b(if|while|for|switch)\\s*\\("
+        // other identifiers and keywords without (
+        + "|\\b\\w+\\s+"
+        // equality operators, operators such as + and -,
+        // and opening brackets { and [
+        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])\\s*)+"
+    );
 };
 
 completer.getMaxFileSizeSupported = function() {
