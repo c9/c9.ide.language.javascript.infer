@@ -126,8 +126,8 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
     });
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode, callback) {
-    if (!currentNode)
+completer.complete = function(doc, fullAst, pos, options, callback) {
+    if (!options.node)
         return callback();
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
