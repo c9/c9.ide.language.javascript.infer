@@ -43,6 +43,19 @@ completer.getCompletionRegex = function() {
     return (/^[\.]$/);
 };
 
+completer.getExpressionPrefixRegex = function() {
+     // Match strings that can be an expression or its prefix
+    return new RegExp(
+        // 'if/while/for ('
+        "(\\b(if|while|for|switch)\\s*\\("
+        // other identifiers and keywords without (
+        + "|\\b\\w+\\s+"
+        // equality operators, operators such as + and -,
+        // and opening brackets { and [
+        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])\\s*)+"
+    );
+};
+
 completer.getMaxFileSizeSupported = function() {
     // .25 of current base_handler default
     return .25 * 10 * 1000 * 80;
@@ -107,11 +120,14 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
     });
     if (predicted.length !== 1)
         return callback();
-    callback(null, { predicted: predicted[0].replaceText + "." });
+    callback(null, {
+        predicted: predicted[0].replaceText + ".",
+        showEarly: predicted[0].icon === "property"
+    });
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode, callback) {
-    if (!currentNode)
+completer.complete = function(doc, fullAst, pos, options, callback) {
+    if (!options.node)
         return callback();
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
