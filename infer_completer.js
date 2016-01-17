@@ -43,7 +43,7 @@ completer.getCompletionRegex = function() {
     return (/^[\.]$/);
 };
 
-completer.getExpressionPrefixRegex = function() {
+completer.getCacheCompletionRegex = function() {
      // Match strings that can be an expression or its prefix
     return new RegExp(
         // 'if/while/for ('
