@@ -52,7 +52,9 @@ completer.getCacheCompletionRegex = function() {
         + "|\\b\\w+\\s+"
         // equality operators, operators such as + and -,
         // and opening brackets { and [
-        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])\\s*)+"
+        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])"
+        // spaces
+        + "|\\s)+"
     );
 };
 
@@ -114,6 +116,12 @@ function getGuid(valueOrGuid) {
 }
 
 completer.predictNextCompletion = function(doc, fullAst, pos, options, callback) {
+    if (!options.matches.length && !options.identifierPrefix.length) {
+        // Not in a place where we'd normally complete code,
+        // but maybe we can complete for the next character?
+        if (options.line[pos.column - 1] !== "{")
+            return callback(null, { predicted: "" });
+    }
     var predicted = options.matches.filter(function(m) {
         return m.priority >= PRIORITY_INFER
             && m.icon !== "method";
