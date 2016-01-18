@@ -117,6 +117,7 @@ function getGuid(valueOrGuid) {
 
 completer.predictNextCompletion = function(doc, fullAst, pos, options, callback) {
     if (!options.matches.length && !options.identifierPrefix.length) {
+        // TODO: make this part of predictNextCompletion() prettier
         // Not in a place where we'd normally complete code,
         // but maybe we can complete for the next character?
         if (options.line[pos.column - 1] !== "{")
