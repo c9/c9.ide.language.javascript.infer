@@ -137,8 +137,8 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
 completer.complete = function(doc, fullAst, pos, options, callback) {
     if (!options.node)
         return callback();
-    var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
+    var line = options.line;
+    var identifier = options.identifierPrefix;
     var basePath = path.getBasePath(completer.path, completer.workspaceDir);
     var filePath = path.canonicalizePath(completer.path, basePath);
     if (fullAst.parent === undefined) {
