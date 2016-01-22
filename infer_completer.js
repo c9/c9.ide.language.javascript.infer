@@ -52,9 +52,7 @@ completer.getCacheCompletionRegex = function() {
         + "|\\b\\w+\\s+"
         // equality operators, operators such as + and -,
         // and opening brackets { and [
-        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])"
-        // spaces
-        + "|\\s)+"
+        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])\\s*)+"
     );
 };
 
@@ -116,12 +114,6 @@ function getGuid(valueOrGuid) {
 }
 
 completer.predictNextCompletion = function(doc, fullAst, pos, options, callback) {
-    if (!options.matches.length) {
-        // Normally we wouldn't complete here, maybe we can complete for the next char?
-        // Let's do so unless it looks like the next char will be a newline
-        if (options.line[pos.column - 1] && /(?![{;})\]\s"'])./.test(options.line[pos.column - 1]))
-            return callback(null, { predicted: "" });
-    }
     var predicted = options.matches.filter(function(m) {
         return m.priority >= PRIORITY_INFER
             && m.icon !== "method";
@@ -137,8 +129,8 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
 completer.complete = function(doc, fullAst, pos, options, callback) {
     if (!options.node)
         return callback();
-    var line = options.line;
-    var identifier = options.identifierPrefix;
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
     var basePath = path.getBasePath(completer.path, completer.workspaceDir);
     var filePath = path.canonicalizePath(completer.path, basePath);
     if (fullAst.parent === undefined) {
