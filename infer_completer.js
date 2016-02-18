@@ -52,7 +52,7 @@ completer.getCacheCompletionRegex = function() {
         + "|\\b\\w+\\s+"
         // equality operators, operators such as + and -,
         // and opening brackets { and [
-        + "|(==|!=|[-+]=|[-+*%<>?!|&{[])"
+        + "|(===?|!==?|[-+]=|[-+*%<>?!|&{[])"
         // spaces
         + "|\\s)+"
     );
@@ -123,10 +123,9 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
             return callback(null, { predicted: "" });
     }
     var predicted = options.matches.filter(function(m) {
-        return m.priority >= PRIORITY_INFER
-            && m.icon !== "method";
+        return m.priority >= PRIORITY_INFER;
     });
-    if (predicted.length !== 1)
+    if (predicted.length !== 1 || predicted[0].icon === "method")
         return callback();
     callback(null, {
         predicted: predicted[0].replaceText + ".",
