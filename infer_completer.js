@@ -129,7 +129,7 @@ completer.predictNextCompletion = function(doc, fullAst, pos, options, callback)
         return callback();
     callback(null, {
         predicted: predicted[0].replaceText + ".",
-        showEarly: predicted[0].icon === "property"
+        showEarly: predicted[0].icon === "property" && !/\./.test(options.line)
     });
 };
 
