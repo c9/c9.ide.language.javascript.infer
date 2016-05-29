@@ -3,6 +3,7 @@ define(function(require, exports, module) {
 var PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').PROPER;
 var MAYBE_PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').MAYBE_PROPER;
 var NOT_PROPER = require('plugins/c9.ide.language.javascript/scope_analyzer').NOT_PROPER;
+var MAX_VALUES_LENGTH = 15;
 
 var valueRegistry = {};
 
@@ -180,10 +181,14 @@ ValueCollection.prototype.toArray = function() {
 ValueCollection.prototype.add = function(value) {
     if (!value)
         throw Error("Adding empty value!");
+    if (this.values.length > MAX_VALUES_LENGTH)
+        return;
     this.values.push(value);
 };
 
 ValueCollection.prototype.addFromPrototype = function(value) {
+    if (this.prototypeValues.length > MAX_VALUES_LENGTH)
+        return;
     this.prototypeValues.push(value);
 };
 
