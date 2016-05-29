@@ -316,7 +316,8 @@ function staticEval(scope, node, newFilePath, newBasePath) {
         "Call(PropAccess(e, prop), args)", function(b) {
             // property access is called as a function, let's hint that
             staticEval(scope, b.e);
-            var fnValues = inferValues(this[0]);
+            var eValues = inferValues(b.e);
+            var fnValues = inferValuesPropAccess(eValues, b.prop.value, new ValueCollection())
             // Assign known information about the function to its arguments
             fnValues.forEach(function(fn) {
                 if (fn instanceof FunctionValue) {
@@ -330,11 +331,9 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             });
             staticEval(scope, b.args);
             if (fnValues.isEmpty()) {
-                var vs = inferValues(b.e);
-                vs.forEach(function(v) {
+                eValues.forEach(function(v) {
                     v.hint(b.prop.value, new FunctionValue(b.prop.value, null, true), MAYBE_PROPER);
                 });
-                fnValues = inferValues(this[0]);
             }
             // Now tell the function value about the arguments passed
             fnValues.forEach(function(fn) {
@@ -500,10 +499,7 @@ function inferValues(e) {
             return this;
         },
         "PropAccess(e, prop)", function(b) {
-            var vs = inferValues(b.e);
-            vs.forEach(function(val) {
-                values.extend(val.get(b.prop.value));
-            });
+            inferValuesPropAccess(inferValues(b.e), b.prop.value, values);
             return this;
         },
         "Function(name, fargs, _)", function(b) {
@@ -563,6 +559,13 @@ function inferValues(e) {
         }
     );
     return values;
+}
+
+function inferValuesPropAccess(values, propName, results) {
+    values.forEach(function(val) {
+        results.extend(val.get(propName));
+    });
+    return results;
 }
 
 function createRootScope(scope, summaries) {
