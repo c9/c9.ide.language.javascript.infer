@@ -19,7 +19,6 @@
         "core"
     ],
     "licenses": [
-        "AGPL",
         "C9SDK"
     ]
 }
