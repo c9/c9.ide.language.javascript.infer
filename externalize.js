@@ -51,7 +51,7 @@ function jsonValueEquals(v1, v2) {
         }
     }
 
-    if (v1.returnValues && !v2.returnValues ||!v1.returnValues && v2.returnValues)
+    if (v1.returnValues && !v2.returnValues || !v1.returnValues && v2.returnValues)
         return false;
     if (!v1.returnValues)
         return true;
@@ -82,7 +82,7 @@ function compact(registryJSON) {
     var guidToIgnore = {};
     for (var i = 0; i < guids.length; i++) {
         var guid = guids[i];
-        for (var j = i+1; j < guids.length; j++) {
+        for (var j = i + 1; j < guids.length; j++) {
             var guid2 = guids[j];
             if (jsonValueEquals(registryJSON[guid], registryJSON[guid2])) { // Equivalent, setup relink
                 guidToGuid[guid2] = guid;

@@ -121,7 +121,7 @@ function evalFunction(scope, node, thisValues) {
                 else {
                     fargVal = new Value(fargName);
                 }
-                val.hint("arg"+idx, fargVal, NOT_PROPER);
+                val.hint("arg" + idx, fargVal, NOT_PROPER);
                 localScope.declare(fargName);
                 localScope.hint(fargName, fargVal, PROPER);
             });
@@ -260,19 +260,19 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             return this;
         },
         // (function() { ... }).call(Blabla.prototype) pattern
-        'Call(PropAccess(Function(name, fargs, body), "call"), args)',  function(b) {
+        'Call(PropAccess(Function(name, fargs, body), "call"), args)', function(b) {
             var fnNode = this[0][0]; // Function(name, ...)
             staticEval(scope, b.args);
             var objectValues = inferValues(b.args[0]);
             var funScope = fnNode.getAnnotation("localScope");
             var fargs = b.fargs;
             evalFunction(scope, fnNode, objectValues);
-            for (var i = 0; i < b.args.length-1; i++) {
-                inferValues(b.args[i+1]).forEach(function(v) {
+            for (var i = 0; i < b.args.length - 1; i++) {
+                inferValues(b.args[i + 1]).forEach(function(v) {
                     if (i < fargs.length)
                         funScope.hint(fargs[i].value, v, NOT_PROPER);
                     objectValues.forEach(function(objV) {
-                        objV.hint('arg'+i, v, NOT_PROPER);
+                        objV.hint('arg' + i, v, NOT_PROPER);
                     });
                 });
             }
@@ -301,7 +301,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
                 inferValues(b.args[i]).forEach(function(v) {
                     variable.values.forEach(function(fn) {
                         if (fn instanceof FunctionValue) {
-                            fn.hint('arg'+i, v, NOT_PROPER);
+                            fn.hint('arg' + i, v, NOT_PROPER);
                         }
                     });
                 });
@@ -317,7 +317,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
             // property access is called as a function, let's hint that
             staticEval(scope, b.e);
             var eValues = inferValues(b.e);
-            var fnValues = inferValuesPropAccess(eValues, b.prop.value, new ValueCollection())
+            var fnValues = inferValuesPropAccess(eValues, b.prop.value, new ValueCollection());
             // Assign known information about the function to its arguments
             fnValues.forEach(function(fn) {
                 if (fn instanceof FunctionValue) {
@@ -341,7 +341,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
                     for (var i = 0; i < b.args.length; i++) {
                         var vs = inferValues(b.args[i]);
                         vs.forEach(function(v) {
-                            fn.hint('arg'+i, v, NOT_PROPER);
+                            fn.hint('arg' + i, v, NOT_PROPER);
                         });
                     }
                     if (fn.get("return").isEmpty())
@@ -378,7 +378,7 @@ function staticEval(scope, node, newFilePath, newBasePath) {
         "Op(op, e1, e2)", function(b) {
             staticEval(scope, b.e1);
             staticEval(scope, b.e2);
-            switch(b.op.value) {
+            switch (b.op.value) {
                 case '<':
                 case '<=':
                 case '>':
@@ -431,7 +431,7 @@ function inferValues(e) {
         "Var(nm)", function(b) {
             var scope = this.getAnnotation("scope");
             if (!scope) {
-                for (var root = this; root.parent; ) root = root.parent;
+                for (var root = this; root.parent;) root = root.parent;
                 console.error("[infer] Cannot find scope of " + b.nm + "; analysis "
                     + (root.getAnnotation("scope") ? "incomplete" : "may not have been performed yet"));
                 return;

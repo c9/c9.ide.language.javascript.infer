@@ -8,7 +8,7 @@ var LINK_TARGET = "c9doc";
 var patch = require("./patch.js");
 
 function getRootObjects(callback) {
-    request({url: 'https://developer.mozilla.org/en/JavaScript/Reference'}, function(err, response) {
+    request({ url: 'https://developer.mozilla.org/en/JavaScript/Reference' }, function(err, response) {
         if (err) throw err;
         var globalObjectsRegex = /https:\/\/developer.mozilla.org\/en\/JavaScript\/Reference\/Global_Objects\/([a-zA-Z0-9]+)/g;
         var match, matches = [];
@@ -27,17 +27,17 @@ function parseProperties(rootObject, html, intoObject, guidPrefix, isFn) {
         var entry = {
             docUrl: match[1],
             guid: guidPrefix + match[3],
-            properties: { _return: [] }
+            properties: { _return: []}
         };
-        intoObject['_'+match[3]] = [entry];
+        intoObject['_' + match[3]] = [entry];
     }
 }
 
 function getObjectInfo(rootObject, callback) {
     console.log("Requesting: ", rootObject);
-    request({url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject}, function(err, response) {
+    request({ url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject }, function(err, response) {
         if (err) throw err;
-        var data = {object: {}, instance: {}};
+        var data = { object: {}, instance: {}};
         
 
         var methodsSplitRegex = />\s*Methods\s*<\/h|>\s*<span>\s*Methods\s*<\/span>\s*<\/h/;
@@ -55,14 +55,14 @@ function getObjectInfo(rootObject, callback) {
         parts = instanceBody.split(methodsSplitRegex);
         parseProperties(rootObject, parts[0], data.instance, "es5:" + rootObject + "/prototype/", false);
         parseProperties(rootObject, parts[1], data.instance, "es5:" + rootObject + "/prototype/", true);
-        delete data.instance['_'+rootObject];
+        delete data.instance['_' + rootObject];
         callback(data);
     });
 }
 
 function getPropertyInfo(data, callback) {
     console.log("Fetching: ", data[0].docUrl);
-    request({url: data[0].docUrl}, function(err, response) {
+    request({ url: data[0].docUrl }, function(err, response) {
         if (err) throw err;
         var description =
             response.body.split(/>\s*Summary\s*<\/h[^>]*>/)[1] ||
@@ -78,7 +78,7 @@ getRootObjects(function(rootObjects) {
     var json = {};
     asyncForEach(rootObjects, function(rootObject, next) {
         if (rootObject.match(/^[a-z]/)) {
-            request({url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject}, function(err, response) {
+            request({ url: 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/' + rootObject }, function(err, response) {
                 if (err) throw err;
                 var obj = {
                     guid: "es5:" + rootObject,
@@ -120,7 +120,7 @@ getRootObjects(function(rootObjects) {
         var allProps = {};
         Object.keys(json).forEach(function(tl) {
             var name = tl.split(':')[1];
-            allProps['_'+name] = [tl];
+            allProps['_' + name] = [tl];
         });
         json.exports = {
             guid: "es5:exports",

@@ -119,7 +119,7 @@ define(function(require, exports, module) {
                     continue;
                 }
                 // Var(x) was (possibly) inserted
-                if (newAST[j].cons === "Var" && newAST[j+1] && newAST[j+1].cons === oldAST[i].cons) {
+                if (newAST[j].cons === "Var" && newAST[j + 1] && newAST[j + 1].cons === oldAST[i].cons) {
                     copyAnnos(findScopeNode(oldAST), newAST[j], dryRun);
                     if (!newAST[j].annos)
                         return false;
@@ -135,7 +135,7 @@ define(function(require, exports, module) {
                     continue;
                 }
                 // Var(x) was (possibly) removed
-                if (oldAST[i].cons === "Var" && oldAST[i+1] && oldAST[i+1].cons === newAST[i].cons) {
+                if (oldAST[i].cons === "Var" && oldAST[i + 1] && oldAST[i + 1].cons === newAST[i].cons) {
                     j--;
                     continue;
                 }
@@ -146,10 +146,10 @@ define(function(require, exports, module) {
                         copyAnnos(oldAST[i], newAST[j][0], dryRun);
                         continue;
                     }
-                    else if (!oldAST[i+1]) {
+                    else if (!oldAST[i + 1]) {
                         continue;
                     }
-                    else if (cond === oldAST[i+1].toString()) {
+                    else if (cond === oldAST[i + 1].toString()) {
                         i++;
                         copyAnnos(oldAST[i], newAST[j][0], dryRun);
                         continue;
@@ -205,7 +205,7 @@ define(function(require, exports, module) {
         var diffLeft = -1;
         var diffRight = 0;
         
-        for (var i = 0;  i < newDoc.length; i++) {
+        for (var i = 0; i < newDoc.length; i++) {
             if (oldDoc[i] !== newDoc[i]) {
                 diffLeft = i;
                 break;

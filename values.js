@@ -33,14 +33,14 @@ Value.prototype.init = function(name, node) {
     for (var i = 0; i < contextStack.length; i++) {
         guid += contextStack[i][0] + '[' + contextStack[i][1] + ']/';
     }
-    var top = contextStack[contextStack.length-1];
+    var top = contextStack[contextStack.length - 1];
     if (top) {
         top[1]++;
     }
     if (name) {
         guid += name;
     } else {
-        guid = guid.substring(0, guid.length-1);
+        guid = guid.substring(0, guid.length - 1);
     }
     this.guid = guid;
     this.properties = {};

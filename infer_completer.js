@@ -164,12 +164,12 @@ completer.complete = function(doc, fullAst, pos, options, callback) {
                         v.get(matches[i]).forEach(function(propVal) {
                             var match = valueToMatch(v, propVal, matches[i], false, true);
                             // Only override completion if argument names were _not_ inferred, or if no better match is known
-                            var duplicate = duplicates["_"+match.id];
+                            var duplicate = duplicates["_" + match.id];
                             if (duplicate && duplicate.inferredNames)
-                                delete completions["_"+duplicate.guid];
+                                delete completions["_" + duplicate.guid];
                             if (duplicate && match.inferredNames)
                                 return;
-                            duplicates["_"+match.id] = completions["_" + match.guid] = match;
+                            duplicates["_" + match.id] = completions["_" + match.guid] = match;
                         });
                     });
                 }
@@ -267,12 +267,12 @@ completer.complete = function(doc, fullAst, pos, options, callback) {
                         if (!match.name)
                             return;
                         // Only override completion if argument names were _not_ inferred, or if no better match is known
-                        var duplicate = duplicates["_"+match.id];
+                        var duplicate = duplicates["_" + match.id];
                         if (duplicate && duplicate.inferredNames)
-                            delete completions["_"+duplicate.guid];
+                            delete completions["_" + duplicate.guid];
                         if (duplicate && match.inferredNames)
                             return;
-                        duplicates["_"+match.id] = completions["_"+match.guid] = match;
+                        duplicates["_" + match.id] = completions["_" + match.guid] = match;
                     });
                 }
             }
@@ -334,7 +334,7 @@ completer.proposeRequire = function(identifier, expand, scope, completions, base
                 match.replaceText = match.name = "/" + match.replaceText;
             else if (basePath || basePath === "")
                 match.replaceText = match.name = path.uncanonicalizePath(match.replaceText, basePath);
-            completions["_"+match.guid] = match;
+            completions["_" + match.guid] = match;
             if (expand === EXPAND_REQUIRE) {
                 match.replaceText = 'require("' + match.replaceText + '")';
                 match.name = 'require("' + match.name + '")';
@@ -403,7 +403,7 @@ function filterRequireSubstring(name, names) {
     var nameRegex = new RegExp("^" + nameClean + "\\b|\\b" + nameClean + "$");
     return names.filter(function(n) {
         return nameRegex.test(n);
-    })
+    });
 }
 
 });

@@ -34,7 +34,7 @@ function asyncForEach(array, fn, callback) {
     else {
         callback();
     }
-};
+}
 
 module.exports.arrayToObject = arrayToObject;
 module.exports.stripHtml = stripHtml;

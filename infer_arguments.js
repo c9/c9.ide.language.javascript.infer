@@ -66,7 +66,7 @@ module.exports.extractArgumentNames = function(v, showOptionals) {
     for (var idx = 0; fargs.length ? idx < fargs.length : !argColl.isEmpty(); idx++) {
         var argName;
         if (fargs[idx]) {
-            argName =  fargs[idx].id || fargs[idx];
+            argName = fargs[idx].id || fargs[idx];
             if (showOptionals && fargs[idx].opt) {
                 argName = "[" + argName + "]";
                 opt = opt || idx;
@@ -123,7 +123,7 @@ function valueCollToClosure(name, coll) {
             for (var idx = 0; !argColl.isEmpty() || idx < fargs.length; idx++) {
                 var argName;
                 if (fargs[idx])
-                    argName =  fargs[idx].id || fargs[idx];
+                    argName = fargs[idx].id || fargs[idx];
                 else
                     argName = "arg" + idx;
                 args.push(argName);

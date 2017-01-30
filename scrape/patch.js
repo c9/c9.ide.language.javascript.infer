@@ -12,8 +12,8 @@ var patchNodemanual = module.exports.patchNodemanual = function(defs) {
             opt: true,
             suggest: [ { name: "process.env.port", replaceText: "process.env.port" } ],
             "fargs": [
-                { id: "req", type: ["nodejs_latest:http/ServerRequest/prototype"] },
-                { id: "res", type: ["nodejs_latest:http/ServerResponse/prototype"] }
+                { id: "req", type: ["nodejs_latest:http/ServerRequest/prototype"]},
+                { id: "res", type: ["nodejs_latest:http/ServerResponse/prototype"]}
             ],
             "type": [ "es5:Object/prototype" ]
         }
@@ -29,7 +29,7 @@ var patchNodemanual = module.exports.patchNodemanual = function(defs) {
         {
             "id": "address",
             opt: true,
-            suggest: [ { name : "process.env.IP", replaceText : "process.env.IP" } ],
+            suggest: [ { name: "process.env.IP", replaceText: "process.env.IP" } ],
             "type": [ "es5:String/prototype" ],
             doc: "The address to listen on. Use <tt>process.env.IP</tt> when hosted by Cloud9."
         }
